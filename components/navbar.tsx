@@ -2,13 +2,17 @@
 import {
   Navbar as NextUINavbar,
   NavbarContent,
+  NavbarMenu,
+  NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
+  NavbarMenuItem,
 } from '@nextui-org/navbar';
 import { Button } from '@nextui-org/button';
 import { Link } from '@nextui-org/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import React from 'react';
 
 import KGLogo from '../public/Logo.svg';
 
@@ -16,6 +20,9 @@ import { siteConfig } from '@/config/site';
 
 export const Navbar = () => {
   const pathName = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  console.log(isMenuOpen);
 
   return (
     <NextUINavbar
@@ -27,7 +34,9 @@ export const Navbar = () => {
           '[&>a]:hover:opacity-50',
         ],
       }}
+      isMenuOpen={isMenuOpen}
       maxWidth='2xl'
+      onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarBrand>
         <Image
@@ -62,6 +71,38 @@ export const Navbar = () => {
           </Button>
         </NavbarItem>
       </NavbarContent>
+      <NavbarMenuToggle
+        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+        className='text-default-400 md:hidden'
+      />
+      <NavbarMenu>
+        {siteConfig.navItems.map((item, idx) => {
+          if (idx < 3) {
+            return (
+              <NavbarMenuItem key={item.href} isActive={pathName == item.href}>
+                <Link
+                  color='foreground'
+                  href={item.href}
+                  onPress={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              </NavbarMenuItem>
+            );
+          }
+        })}
+        <NavbarMenuItem>
+          <Button
+            as={Link}
+            className='bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white shadow-lg hover:!opacity-80'
+            href='/ship'
+            radius='full'
+            onPress={() => setIsMenuOpen(false)}
+          >
+            Get Started
+          </Button>
+        </NavbarMenuItem>
+      </NavbarMenu>
     </NextUINavbar>
   );
 };
