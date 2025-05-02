@@ -16,8 +16,9 @@ export default function MainLayout({
       <Navbar />
       <main
         className={clsx(
-          'container mx-auto flex flex-1 flex-col items-center overflow-hidden px-8',
-          pathName !== '/ship' && 'justify-center'
+          'h-[calc(100vh-64px)]',
+          pathName !== '/ship' &&
+            'container mx-auto flex flex-1 flex-col items-center justify-center overflow-hidden px-8'
         )}
       >
         {children}

@@ -1,0 +1,134 @@
+'use client';
+
+import type { FormProps, InputProps } from '@heroui/react';
+
+import { Controller, useForm } from 'react-hook-form';
+import React from 'react';
+import { Input } from '@heroui/react';
+import { cn } from '@heroui/react';
+
+export type ContactInformationFormProps = FormProps & {
+  onNext: () => void;
+};
+
+const ContactInformationForm = React.forwardRef<
+  HTMLFormElement,
+  ContactInformationFormProps
+>(({ className, onNext, ...props }, ref) => {
+  const inputProps: Pick<InputProps, 'labelPlacement' | 'classNames'> = {
+    labelPlacement: 'outside',
+    classNames: {
+      label:
+        'text-small font-medium text-default-700 group-data-[filled-within=true]:text-default-700',
+    },
+  };
+
+  const { control, register, handleSubmit, setValue } = useForm();
+
+  const onSubmit = (data: any) => {
+    localStorage.setItem('contact-info', JSON.stringify(data));
+    onNext();
+  };
+
+  React.useEffect(() => {
+    const data = JSON.parse(localStorage.getItem('contact-info') ?? '{}');
+
+    if (data) {
+      setValue('firstName', data.firstName);
+      setValue('lastName', data.lastName);
+      setValue('email', data.email);
+      setValue('tel', data.tel);
+    }
+  }),
+    [];
+
+  return (
+    <form id='contact-info' onSubmit={handleSubmit(onSubmit)}>
+      <div className='text-3xl font-bold leading-9 text-default-foreground'>
+        Contact Information
+      </div>
+      <div
+        className={cn('flex grid grid-cols-12 flex-col gap-4 py-8', className)}
+      >
+        <Controller
+          control={control}
+          name='firstName'
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              {...register('firstName')}
+              isRequired // Added isRequired
+              className='col-span-12 md:col-span-6'
+              errorMessage={fieldState.error?.message}
+              isInvalid={fieldState.invalid}
+              label='First Name'
+              placeholder='John'
+              {...inputProps}
+            />
+          )}
+          rules={{ required: 'Name is required' }}
+        />
+
+        <Controller
+          control={control}
+          name='lastName'
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              isRequired // Added isRequired
+              className='col-span-12 md:col-span-6'
+              errorMessage={fieldState.error?.message}
+              isInvalid={fieldState.invalid}
+              label='Last Name'
+              placeholder='doe'
+              {...inputProps}
+            />
+          )}
+          rules={{ required: 'Last Name is required' }}
+        />
+
+        <Controller
+          control={control}
+          name='email'
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              isRequired // Added isRequired
+              className='col-span-12 md:col-span-6'
+              errorMessage={fieldState.error?.message}
+              isInvalid={fieldState.invalid}
+              label='Email'
+              placeholder='john.doe@gmail.com'
+              type='email'
+              {...inputProps}
+            />
+          )}
+          rules={{ required: 'Email is required' }}
+        />
+
+        <Controller
+          control={control}
+          name='tel'
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              isRequired // Added isRequired
+              className='col-span-12 md:col-span-6'
+              errorMessage={fieldState.error?.message}
+              isInvalid={fieldState.invalid}
+              label='Mobile Number'
+              placeholder='xxx-xxx-xxxx'
+              type='tel'
+              {...inputProps}
+            />
+          )}
+          rules={{ required: 'Mobile Number is required' }}
+        />
+      </div>
+    </form>
+  );
+});
+
+ContactInformationForm.displayName = 'ContactInformationForm';
+
+export default ContactInformationForm;

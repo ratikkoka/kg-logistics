@@ -33,10 +33,17 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang='en'>
-      <head />
+      <head>
+        <meta charSet='UTF-8' />
+        <meta content='width=device-width, initial-scale=1.0' name='viewport' />
+        <script
+          defer
+          src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDzB7zFJfIzOxd1_I2gzJZwtIvDgGJhAkg&libraries=places&callback=kg_auto_callback'
+        />
+      </head>
       <body
         className={clsx(
-          'min-h-screen bg-[#FFFAF0] font-sans antialiased',
+          'h-screen bg-[#FFFAF0] font-sans antialiased',
           fontSans.variable
         )}
       >

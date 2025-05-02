@@ -1,15 +1,15 @@
 'use client';
 import {
-  Navbar as NextUINavbar,
+  Navbar as HeroUINavbar,
   NavbarContent,
   NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
-} from '@nextui-org/navbar';
-import { Button } from '@nextui-org/button';
-import { Link } from '@nextui-org/link';
+} from '@heroui/navbar';
+import { Button } from '@heroui/button';
+import { Link } from '@heroui/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import React from 'react';
@@ -22,10 +22,8 @@ export const Navbar = () => {
   const pathName = usePathname();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  console.log(isMenuOpen);
-
   return (
-    <NextUINavbar
+    <HeroUINavbar
       classNames={{
         base: ['bg-[#FFFAF0]'],
         item: [
@@ -39,14 +37,16 @@ export const Navbar = () => {
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarBrand>
-        <Image
-          alt='Logo'
-          className='mr-2'
-          height={32}
-          src={KGLogo}
-          width={32}
-        />
-        <p className='font-bold text-inherit'>KG Logistics</p>
+        <Link className='flex items-center' color='foreground' href='/'>
+          <Image
+            alt='Logo'
+            className='mr-2'
+            height={32}
+            src={KGLogo}
+            width={32}
+          />
+          <p className='font-bold text-inherit'>KG Logistics</p>
+        </Link>
       </NavbarBrand>
       <NavbarContent className='hidden gap-4 sm:flex' justify='end'>
         {siteConfig.navItems.map((item, idx) => {
@@ -75,7 +75,7 @@ export const Navbar = () => {
         aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
         className='text-default-400 md:hidden'
       />
-      <NavbarMenu>
+      <NavbarMenu className='bg-[#FFFAF0]'>
         {siteConfig.navItems.map((item, idx) => {
           if (idx < 3) {
             return (
@@ -103,6 +103,6 @@ export const Navbar = () => {
           </Button>
         </NavbarMenuItem>
       </NavbarMenu>
-    </NextUINavbar>
+    </HeroUINavbar>
   );
 };

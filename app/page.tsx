@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Button, Link } from '@nextui-org/react';
+import { Button, Link } from '@heroui/react';
 import TextTransition, { presets } from 'react-text-transition';
 
 import { title } from '@/components/primitives';
