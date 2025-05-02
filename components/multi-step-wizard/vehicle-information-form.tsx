@@ -34,7 +34,10 @@ const VehicleInformationForm = React.forwardRef<
     const data = JSON.parse(localStorage.getItem('vehicle-info') ?? '{}');
 
     if (data) {
-      setValue('vin', data.vin);
+      if (data.vin) {
+        setValue('vin', data.vin);
+        isVinValid.current = true;
+      }
       setValue('year', data.year);
       setValue('make', data.make);
       setValue('model', data.model);
@@ -133,13 +136,12 @@ const VehicleInformationForm = React.forwardRef<
           <Controller
             control={control}
             name='year'
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <Input
                 {...field}
                 {...register('year')} // Register the field
                 className='col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Year is required'
                 isRequired={!isVinValid.current} // Added isRequired conditionally
                 label='Year'
                 placeholder='Year'
@@ -147,21 +149,17 @@ const VehicleInformationForm = React.forwardRef<
                 {...inputProps}
               />
             )}
-            rules={
-              !isVinValid.current ? { required: 'Year is required' } : undefined
-            }
           />
 
           <Controller
             control={control}
             name='make'
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <Input
                 {...field}
                 {...register('make')} // Register the field
                 className='col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Make is required'
                 isRequired={!isVinValid.current} // Added isRequired conditionally
                 label='Make'
                 placeholder='Make'
@@ -169,21 +167,17 @@ const VehicleInformationForm = React.forwardRef<
                 {...inputProps}
               />
             )}
-            rules={
-              !isVinValid.current ? { required: 'Make is required' } : undefined
-            }
           />
 
           <Controller
             control={control}
             name='model'
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <Input
                 {...field}
                 {...register('model')} // Register the field
                 className='col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Model is required'
                 isRequired={!isVinValid.current} // Added isRequired conditionally
                 label='Model'
                 placeholder='Model'
@@ -191,11 +185,6 @@ const VehicleInformationForm = React.forwardRef<
                 {...inputProps}
               />
             )}
-            rules={
-              !isVinValid.current
-                ? { required: 'Model is required' }
-                : undefined
-            }
           />
         </div>
 

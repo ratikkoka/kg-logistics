@@ -200,15 +200,14 @@ const ChooseAddressForm = React.forwardRef<
         <Controller
           control={control}
           name='pickupAddress'
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <Autocomplete
               {...field}
               allowsCustomValue
               isRequired
               className='col-span-12'
-              errorMessage={fieldState.error?.message}
+              errorMessage='Pickup address is required'
               inputValue={pickupValue}
-              isInvalid={fieldState.invalid}
               label='Street Address'
               placeholder='Enter pickup address'
               onInputChange={handlePickupInput}
@@ -224,59 +223,52 @@ const ChooseAddressForm = React.forwardRef<
                 : []}
             </Autocomplete>
           )}
-          rules={{ required: 'Pickup address is required' }}
         />
         <div className='grid grid-cols-12 gap-4'>
           <Controller
             control={control}
             name='pickupCity'
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <Input
                 {...field}
                 isRequired
                 className='col-span-6 md:col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Pickup city is required'
                 label='City'
                 placeholder='Enter city'
                 {...inputProps}
               />
             )}
-            rules={{ required: 'Pickup city is required' }}
           />
           <Controller
             control={control}
             name='pickupState'
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <Input
                 {...field}
                 isRequired
                 className='col-span-6 md:col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Pickup state is required'
                 label='State'
                 placeholder='Enter state'
                 {...inputProps}
               />
             )}
-            rules={{ required: 'Pickup state is required' }}
           />
           <Controller
             control={control}
             name='pickupZip'
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <Input
                 {...field}
                 isRequired
                 className='col-span-6 md:col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Pickup zip code is required'
                 label='Zip Code'
                 placeholder='Enter zip code'
                 {...inputProps}
               />
             )}
-            rules={{ required: 'Pickup zip code is required' }}
           />
         </div>
 
@@ -292,9 +284,8 @@ const ChooseAddressForm = React.forwardRef<
               allowsCustomValue
               isRequired
               className='col-span-12'
-              errorMessage={fieldState.error?.message}
+              errorMessage='Dropoff address is required'
               inputValue={dropOffValue}
-              isInvalid={fieldState.invalid}
               label='Street Address'
               placeholder='Enter pickup address'
               onInputChange={handleDropoffInput}
@@ -310,7 +301,6 @@ const ChooseAddressForm = React.forwardRef<
                 : []}
             </Autocomplete>
           )}
-          rules={{ required: 'Dropoff address is required' }}
         />
         <div className='grid grid-cols-12 gap-4'>
           <Controller
@@ -321,14 +311,12 @@ const ChooseAddressForm = React.forwardRef<
                 {...field}
                 isRequired
                 className='col-span-6 md:col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Dropoff city is required'
                 label='City'
                 placeholder='Enter city'
                 {...inputProps}
               />
             )}
-            rules={{ required: 'Dropoff city is required' }}
           />
           <Controller
             control={control}
@@ -338,14 +326,12 @@ const ChooseAddressForm = React.forwardRef<
                 {...field}
                 isRequired
                 className='col-span-6 md:col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Dropoff state is required'
                 label='State'
                 placeholder='Enter state'
                 {...inputProps}
               />
             )}
-            rules={{ required: 'Dropoff state is required' }}
           />
           <Controller
             control={control}
@@ -355,14 +341,12 @@ const ChooseAddressForm = React.forwardRef<
                 {...field}
                 isRequired
                 className='col-span-6 md:col-span-4'
-                errorMessage={fieldState.error?.message}
-                isInvalid={fieldState.invalid}
+                errorMessage='Dropoff zip code is required'
                 label='Zip Code'
                 placeholder='Enter zip code'
                 {...inputProps}
               />
             )}
-            rules={{ required: 'Dropoff zip code is required' }}
           />
         </div>
       </form>

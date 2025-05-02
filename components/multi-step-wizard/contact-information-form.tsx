@@ -53,76 +53,71 @@ const ContactInformationForm = React.forwardRef<
         <Controller
           control={control}
           name='firstName'
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <Input
               {...field}
               {...register('firstName')}
-              isRequired // Added isRequired
+              isRequired
               className='col-span-12 md:col-span-6'
-              errorMessage={fieldState.error?.message}
-              isInvalid={fieldState.invalid}
+              errorMessage='First Name is required'
               label='First Name'
               placeholder='John'
               {...inputProps}
             />
           )}
-          rules={{ required: 'Name is required' }}
         />
 
         <Controller
           control={control}
           name='lastName'
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <Input
               {...field}
-              isRequired // Added isRequired
+              {...register('lastName')}
+              isRequired
               className='col-span-12 md:col-span-6'
-              errorMessage={fieldState.error?.message}
-              isInvalid={fieldState.invalid}
+              errorMessage='Last Name is required'
               label='Last Name'
               placeholder='doe'
               {...inputProps}
             />
           )}
-          rules={{ required: 'Last Name is required' }}
         />
 
         <Controller
           control={control}
           name='email'
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <Input
               {...field}
-              isRequired // Added isRequired
+              {...register('email')}
+              isRequired
               className='col-span-12 md:col-span-6'
-              errorMessage={fieldState.error?.message}
-              isInvalid={fieldState.invalid}
+              errorMessage='Email is required'
               label='Email'
               placeholder='john.doe@gmail.com'
               type='email'
               {...inputProps}
             />
           )}
-          rules={{ required: 'Email is required' }}
         />
 
         <Controller
           control={control}
           name='tel'
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <Input
               {...field}
-              isRequired // Added isRequired
+              {...register('tel')}
+              isRequired
               className='col-span-12 md:col-span-6'
-              errorMessage={fieldState.error?.message}
-              isInvalid={fieldState.invalid}
+              errorMessage='Mobile Number is required'
               label='Mobile Number'
               placeholder='xxx-xxx-xxxx'
               type='tel'
               {...inputProps}
             />
           )}
-          rules={{ required: 'Mobile Number is required' }}
         />
       </div>
     </form>

@@ -4,6 +4,7 @@ import React from 'react';
 import { Button, cn } from '@heroui/react';
 import { useForm } from 'react-hook-form';
 import { Icon } from '@iconify/react';
+import emailjs from '@emailjs/browser';
 
 const SERVICE_ID = 'service_smifkhn';
 const TEMPLATE_ID = 'template_gqweqiu';
@@ -37,29 +38,26 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
         ...addressValues,
       };
 
-      console.log(formValues);
       if (formValues) {
         sendEmail(formValues);
       }
     };
 
     const sendEmail = (formValues: Record<string, unknown>) => {
-      setIsSubmitted(true); // Set submission status to true
-      props.onSubmitSuccess?.(); // Notify parent component
-      // emailjs
-      //   .send(SERVICE_ID, TEMPLATE_ID, formValues, {
-      //     publicKey: PUBLIC_KEY,
-      //   })
-      //   .then(
-      //     () => {
-      //       // localStorage.clear();
-      //       setIsSubmitted(true); // Set submission status to true
-      //       props.onSubmitSuccess?.(); // Notify parent component
-      //     },
-      //     (error) => {
-      //       console.log('FAILED...', error.text);
-      //     }
-      //   );
+      emailjs
+        .send(SERVICE_ID, TEMPLATE_ID, formValues, {
+          publicKey: PUBLIC_KEY,
+        })
+        .then(
+          () => {
+            localStorage.clear();
+            setIsSubmitted(true); // Set submission status to true
+            props.onSubmitSuccess?.(); // Notify parent component
+          },
+          (error) => {
+            console.log('FAILED...', error.text);
+          }
+        );
     };
 
     const formatDate = (date: string) => {
