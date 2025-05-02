@@ -45,9 +45,14 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
 
     const sendEmail = (formValues: Record<string, unknown>) => {
       emailjs
-        .send(SERVICE_ID, TEMPLATE_ID, formValues, {
-          publicKey: PUBLIC_KEY,
-        })
+        .send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
+          formValues,
+          {
+            publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '',
+          }
+        )
         .then(
           () => {
             localStorage.clear();

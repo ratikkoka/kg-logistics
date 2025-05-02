@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import { Metadata, Viewport } from 'next';
 import clsx from 'clsx';
+import { Analytics } from '@vercel/analytics/next';
 
 import { Providers } from './providers';
 
@@ -38,7 +39,7 @@ export default function RootLayout({
         <meta content='width=device-width, initial-scale=1.0' name='viewport' />
         <script
           defer
-          src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDzB7zFJfIzOxd1_I2gzJZwtIvDgGJhAkg&libraries=places&callback=kg_auto_callback'
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=kg_auto_callback`}
         />
       </head>
       <body
@@ -50,6 +51,7 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
           <MainLayout>{children}</MainLayout>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
