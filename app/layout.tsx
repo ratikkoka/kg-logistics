@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang='en'>
+    <html suppressHydrationWarning className='bg-[#FFFAF0]' lang='en'>
       <head>
         <meta charSet='UTF-8' />
         <meta content='width=device-width, initial-scale=1.0' name='viewport' />
@@ -43,7 +43,7 @@ export default function RootLayout({
       </head>
       <body
         className={clsx(
-          'h-screen bg-[#FFFAF0] font-sans antialiased',
+          'min-h-screen font-sans antialiased',
           fontSans.variable
         )}
       >
