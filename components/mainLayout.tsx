@@ -18,7 +18,7 @@ export default function MainLayout({
         className={clsx(
           'h-[calc(100vh-64px)]',
           pathName !== '/ship' &&
-            'container mx-auto flex flex-1 flex-col items-center justify-center overflow-hidden px-8'
+            'container mx-auto flex flex-1 flex-col items-center justify-center px-8'
         )}
       >
         {children}

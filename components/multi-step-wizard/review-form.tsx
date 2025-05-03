@@ -6,10 +6,6 @@ import { useForm } from 'react-hook-form';
 import { Icon } from '@iconify/react';
 import emailjs from '@emailjs/browser';
 
-const SERVICE_ID = 'service_smifkhn';
-const TEMPLATE_ID = 'template_gqweqiu';
-const PUBLIC_KEY = 'BYUGVToQki0Vw-jy0';
-
 export type ReviewFormProps = React.HTMLAttributes<HTMLFormElement> & {
   onSubmitSuccess?: () => void; // Callback for successful submission
 };

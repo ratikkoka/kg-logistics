@@ -1,9 +1,270 @@
-import { title } from '@/components/primitives';
+'use client';
 
-export default function BlogPage() {
+import React from 'react';
+import {
+  Accordion,
+  AccordionItem,
+  Alert,
+  Button,
+  Divider,
+  Input,
+  InputProps,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Radio,
+  RadioGroup,
+  Textarea,
+  useDisclosure,
+} from '@heroui/react';
+import { Icon } from '@iconify/react';
+import emailjs from '@emailjs/browser';
+import { Controller, useForm } from 'react-hook-form';
+
+import faqs from './faqs';
+
+export default function ContactPage() {
+  const inputProps: Pick<InputProps, 'labelPlacement' | 'classNames'> = {
+    labelPlacement: 'outside',
+    classNames: {
+      label:
+        'text-small font-medium text-default-700 group-data-[filled-within=true]:text-default-700',
+    },
+  };
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
+  const { control, register, handleSubmit } = useForm();
+
+  const [contactType, setContactType] = React.useState('text');
+
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
+
+  const onSubmit = (data: any) => {
+    sendEmail(data);
+  };
+
+  const sendEmail = (formValues: Record<string, unknown>) => {
+    emailjs
+      .send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+        process.env.NEXT_PUBLIC_EMAILJS_CONTACT_ID || '',
+        formValues,
+        {
+          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '',
+        }
+      )
+      .then(
+        () => {
+          setIsSubmitted(true);
+          onClose();
+        },
+        (error) => {
+          console.log('FAILED...', error.text);
+        }
+      );
+  };
+
   return (
-    <div>
-      <h1 className={title()}>Contact Us</h1>
-    </div>
+    <section className='mx-auto w-full max-w-6xl px-4 sm:py-32 md:px-6 lg:px-8'>
+      <div className='mx-auto flex w-full max-w-4xl flex-col items-center gap-8'>
+        <h2 className='leading-[1.25 w-full max-w-3xl bg-gradient-to-br from-foreground to-foreground-600 bg-clip-text px-2 text-center text-3xl font-bold tracking-tight text-transparent md:text-5xl md:leading-[1.25]'>
+          <span className='inline-block md:hidden'>FAQs</span>
+          <span className='hidden md:inline-block'>
+            Frequently asked questions
+          </span>
+        </h2>
+        <div>
+          <Button
+            disableAnimation
+            className='bg-gradient-to-br from-foreground to-foreground-600 font-medium text-background'
+            endContent={<Icon icon='lucide:chevron-right' width={24} />}
+            size='lg'
+            variant='shadow'
+            onPress={onOpen}
+          >
+            Contact Us
+          </Button>
+        </div>
+        <Accordion
+          fullWidth
+          keepContentMounted
+          itemClasses={{
+            base: 'px-0 md:px-2 md:px-6',
+            title: 'font-medium',
+            trigger: 'py-6 flex-row-reverse',
+            content: 'pt-0 pb-6 text-base text-default-500',
+            indicator: 'rotate-0 data-[open=true]:-rotate-45',
+          }}
+          items={faqs}
+          selectionMode='multiple'
+        >
+          {faqs.map((item, i) => (
+            <AccordionItem
+              key={i}
+              indicator={
+                <Icon
+                  className='text-secondary'
+                  icon='lucide:plus'
+                  width={24}
+                />
+              }
+              title={item.title}
+            >
+              <pre className='whitespace-pre-wrap font-mono'>
+                {item.content.split('\n').map((line, index) => (
+                  <React.Fragment key={index}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
+              </pre>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+      <Modal
+        isOpen={isOpen}
+        shouldBlockScroll={false}
+        onOpenChange={onOpenChange}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <ModalBody>
+              <ModalHeader className='flex-col items-center gap-1 px-0 text-center'>
+                <h1 className='text-xl'>Contact Us</h1>
+                <p className='text-small font-normal text-default-500'>
+                  Have a question? Feel free to reach out to us!
+                </p>
+              </ModalHeader>
+              <form id='contact-info' onSubmit={handleSubmit(onSubmit)}>
+                <div className='flex grid grid-cols-12 flex-col gap-4 pb-8'>
+                  <Controller
+                    control={control}
+                    name='contactName'
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        {...register('contactName')}
+                        isRequired
+                        className='col-span-12 md:col-span-6'
+                        errorMessage='First Name is required'
+                        label='Name'
+                        placeholder='John'
+                        {...inputProps}
+                      />
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name='contactEmail'
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        {...register('contactEmail')}
+                        className='col-span-12 md:col-span-6'
+                        errorMessage='Email is required'
+                        isRequired={contactType === 'email'}
+                        label='Email'
+                        placeholder='john.doe@gmail.com'
+                        type='email'
+                        {...inputProps}
+                      />
+                    )}
+                  />
+
+                  <Controller
+                    control={control}
+                    name='contactTel'
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        {...register('contactTel')}
+                        className='col-span-12 md:col-span-6'
+                        errorMessage='Mobile Number is required'
+                        isRequired={contactType === 'text'}
+                        label='Mobile Number'
+                        placeholder='xxx-xxx-xxxx'
+                        type='tel'
+                        {...inputProps}
+                      />
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name='contactType'
+                    render={({ field }) => (
+                      <RadioGroup
+                        {...field}
+                        isRequired
+                        className='col-span-12 md:col-span-6'
+                        classNames={{
+                          wrapper: 'gap-4',
+                          label:
+                            'text-small font-medium text-default-700 group-data-[filled-within=true]:text-default-700',
+                        }}
+                        color='secondary'
+                        defaultValue='text'
+                        errorMessage='Contact method is required'
+                        label='Preffered Contact Method'
+                        orientation='horizontal'
+                        value={field.value}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          setContactType(value.target.value);
+                        }}
+                      >
+                        <Radio value='text'>Text</Radio>
+                        <Radio value='email'>Email</Radio>
+                      </RadioGroup>
+                    )}
+                  />
+                </div>
+                <Controller
+                  control={control}
+                  name='contactMessage'
+                  render={({ field }) => (
+                    <Textarea
+                      {...field}
+                      {...register('contactMessage')}
+                      isRequired
+                      className='col-span-12 md:col-span-6'
+                      errorMessage='Message is required'
+                      label='Message'
+                      minRows={8}
+                      {...inputProps}
+                    />
+                  )}
+                />
+                <Divider className='my-2' />
+                <div className='flex w-full items-end justify-end pb-4'>
+                  <div className='flex gap-2'>
+                    <Button
+                      color='danger'
+                      type='button'
+                      variant='flat'
+                      onPress={onClose}
+                    >
+                      Cancel
+                    </Button>
+                    <Button color='secondary' type='submit'>
+                      Submit
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            </ModalBody>
+          )}
+        </ModalContent>
+      </Modal>
+      <Alert
+        color='success'
+        description='Your message was sent successfully!'
+        isVisible={isSubmitted}
+        title='Great Success!'
+        variant='faded'
+        onClose={() => setIsSubmitted(false)}
+      />
+    </section>
   );
 }

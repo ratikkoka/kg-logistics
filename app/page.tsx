@@ -23,7 +23,11 @@ export default function Home() {
     <section className='z-20 flex flex-col items-center justify-center gap-[18px] sm:gap-6'>
       <div className='inline-block max-w-xl justify-center text-center'>
         <span className={title({ size: 'lg' })}>
-          <TextTransition inline springConfig={presets.slow}>
+          <TextTransition
+            inline
+            className='bg-gradient-to-br from-foreground to-foreground-600 bg-clip-text'
+            springConfig={presets.slow}
+          >
             {TEXTS[index % TEXTS.length]}
           </TextTransition>
           <span className='bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent'>
