@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 import { Metadata, Viewport } from 'next';
 import clsx from 'clsx';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { Providers } from './providers';
 
@@ -52,6 +53,7 @@ export default function RootLayout({
           <MainLayout>{children}</MainLayout>
         </Providers>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
