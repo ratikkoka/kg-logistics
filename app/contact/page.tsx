@@ -125,6 +125,8 @@ export default function ContactPage() {
       </div>
       <Modal
         isOpen={isOpen}
+        placement='top'
+        scrollBehavior='inside'
         shouldBlockScroll={false}
         onOpenChange={onOpenChange}
       >
@@ -231,6 +233,7 @@ export default function ContactPage() {
                       className='col-span-12 md:col-span-6'
                       errorMessage='Message is required'
                       label='Message'
+                      maxRows={8}
                       minRows={8}
                       {...inputProps}
                     />
