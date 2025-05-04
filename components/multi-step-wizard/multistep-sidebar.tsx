@@ -107,16 +107,16 @@ const MultiStepSidebar = React.forwardRef<
                 disabled={isSubmitted}
                 steps={[
                   {
-                    title: 'Account',
+                    title: 'Contact Information',
                   },
                   {
-                    title: 'Information',
+                    title: 'Vehicle Information',
                   },
                   {
-                    title: 'Address',
+                    title: 'Pickup / Dropoff',
                   },
                   {
-                    title: 'Payment',
+                    title: 'Submit',
                   },
                 ]}
                 onStepChange={onChangePage}
