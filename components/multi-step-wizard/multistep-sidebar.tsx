@@ -107,13 +107,13 @@ const MultiStepSidebar = React.forwardRef<
                 disabled={isSubmitted}
                 steps={[
                   {
-                    title: 'Contact Information',
+                    title: 'Contact',
                   },
                   {
-                    title: 'Vehicle Information',
+                    title: 'Vehicle',
                   },
                   {
-                    title: 'Pickup / Dropoff',
+                    title: 'Addresses',
                   },
                   {
                     title: 'Submit',
