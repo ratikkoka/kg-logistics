@@ -1,28 +1,33 @@
+import { cache } from 'react';
+
 import { prisma } from '@/lib/prisma';
 
 /**
  * Check if a user is authorized to access the admin dashboard
+ * Cached per request to avoid duplicate database queries
  * @param userId - Supabase Auth user ID
  * @returns true if user is authorized, false otherwise
  */
-export async function isUserAuthorized(userId: string): Promise<boolean> {
-  try {
-    if (!userId) {
+export const isUserAuthorized = cache(
+  async (userId: string): Promise<boolean> => {
+    try {
+      if (!userId) {
+        return false;
+      }
+
+      const profile = await prisma.profile.findUnique({
+        where: { id: userId },
+        select: { hasAccess: true },
+      });
+
+      return profile?.hasAccess ?? false;
+    } catch (error) {
+      console.error('Error checking user authorization:', error);
+
       return false;
     }
-
-    const profile = await prisma.profile.findUnique({
-      where: { id: userId },
-      select: { hasAccess: true },
-    });
-
-    return profile?.hasAccess ?? false;
-  } catch (error) {
-    console.error('Error checking user authorization:', error);
-
-    return false;
   }
-}
+);
 
 /**
  * Get all user profiles with their auth data

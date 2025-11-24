@@ -174,7 +174,12 @@ export default function AdminMobileNav() {
                           : 'text-default-600 hover:bg-default-100 hover:text-default-900'
                       )}
                       href={item.href}
+                      prefetch={true}
                       onClick={() => setIsOpen(false)}
+                      onMouseEnter={() => {
+                        // Prefetch on hover for faster navigation
+                        router.prefetch(item.href);
+                      }}
                     >
                       <Icon icon={item.icon} width={20} />
                       <span>{item.title}</span>
