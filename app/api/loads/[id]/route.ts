@@ -1,15 +1,10 @@
+import type { LoadStatus } from '@prisma/client';
+
 import { NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 import { isUserAuthorized } from '@/lib/auth';
-
-type LoadStatus =
-  | 'UNLISTED'
-  | 'LISTED'
-  | 'CARRIER_ASSIGNED'
-  | 'PICKED_UP'
-  | 'COMPLETED';
 
 // GET /api/loads/[id] - Get a single load
 export async function GET(

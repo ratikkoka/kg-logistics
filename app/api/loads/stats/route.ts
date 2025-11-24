@@ -1,16 +1,10 @@
+import type { LoadStatus, LoadType } from '@prisma/client';
+
 import { NextResponse } from 'next/server';
 
 import { createClient } from '@/lib/supabase/server';
 import { isUserAuthorized } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-
-type LoadStatus =
-  | 'UNLISTED'
-  | 'LISTED'
-  | 'CARRIER_ASSIGNED'
-  | 'PICKED_UP'
-  | 'COMPLETED';
-type LoadType = 'OPEN' | 'ENCLOSED';
 
 // GET /api/loads/stats - Get load dashboard statistics
 export async function GET(request: Request) {
@@ -82,78 +76,56 @@ export async function GET(request: Request) {
       },
     });
 
-    type LoadSelect = {
-      status: string;
-      loadType: string;
-      quotedCost: string | null;
-      carrierCost: string | null;
-      createdAt: Date;
-      completedAt: Date | null;
-    };
-
     // Calculate basic counts
     const total = allLoads.length;
     const statusCounts = {
-      UNLISTED: allLoads.filter((l: LoadSelect) => l.status === 'UNLISTED')
+      UNLISTED: allLoads.filter((l) => l.status === 'UNLISTED').length,
+      LISTED: allLoads.filter((l) => l.status === 'LISTED').length,
+      CARRIER_ASSIGNED: allLoads.filter((l) => l.status === 'CARRIER_ASSIGNED')
         .length,
-      LISTED: allLoads.filter((l: LoadSelect) => l.status === 'LISTED').length,
-      CARRIER_ASSIGNED: allLoads.filter(
-        (l: LoadSelect) => l.status === 'CARRIER_ASSIGNED'
-      ).length,
-      PICKED_UP: allLoads.filter((l: LoadSelect) => l.status === 'PICKED_UP')
-        .length,
-      COMPLETED: allLoads.filter((l: LoadSelect) => l.status === 'COMPLETED')
-        .length,
+      PICKED_UP: allLoads.filter((l) => l.status === 'PICKED_UP').length,
+      COMPLETED: allLoads.filter((l) => l.status === 'COMPLETED').length,
     };
 
     const loadTypeCounts = {
-      OPEN: allLoads.filter((l: LoadSelect) => l.loadType === 'OPEN').length,
-      ENCLOSED: allLoads.filter((l: LoadSelect) => l.loadType === 'ENCLOSED')
-        .length,
+      OPEN: allLoads.filter((l) => l.loadType === 'OPEN').length,
+      ENCLOSED: allLoads.filter((l) => l.loadType === 'ENCLOSED').length,
     };
 
     // Calculate financial metrics
-    const completedLoads = allLoads.filter(
-      (l: LoadSelect) => l.status === 'COMPLETED'
-    );
+    const completedLoads = allLoads.filter((l) => l.status === 'COMPLETED');
 
     // Total income (sum of quotedCost for completed loads)
-    const totalIncome = completedLoads.reduce(
-      (sum: number, load: LoadSelect) => {
-        if (load.quotedCost) {
-          const cost = parseFloat(load.quotedCost);
+    const totalIncome = completedLoads.reduce((sum, load) => {
+      if (load.quotedCost) {
+        const cost = parseFloat(load.quotedCost);
 
-          return sum + (isNaN(cost) ? 0 : cost);
-        }
+        return sum + (isNaN(cost) ? 0 : cost);
+      }
 
-        return sum;
-      },
-      0
-    );
+      return sum;
+    }, 0);
 
     // Total profit (sum of profit for completed loads)
-    const totalProfit = completedLoads.reduce(
-      (sum: number, load: LoadSelect) => {
-        if (load.quotedCost && load.carrierCost) {
-          const quoted = parseFloat(load.quotedCost);
-          const carrier = parseFloat(load.carrierCost);
+    const totalProfit = completedLoads.reduce((sum, load) => {
+      if (load.quotedCost && load.carrierCost) {
+        const quoted = parseFloat(load.quotedCost);
+        const carrier = parseFloat(load.carrierCost);
 
-          if (!isNaN(quoted) && !isNaN(carrier)) {
-            return sum + (quoted - carrier);
-          }
+        if (!isNaN(quoted) && !isNaN(carrier)) {
+          return sum + (quoted - carrier);
         }
+      }
 
-        return sum;
-      },
-      0
-    );
+      return sum;
+    }, 0);
 
     // Average profit per completed load
     const avgProfit =
       completedLoads.length > 0 ? totalProfit / completedLoads.length : 0;
 
     // Total revenue (all loads with quotes, not just completed)
-    const totalRevenue = allLoads.reduce((sum: number, load: LoadSelect) => {
+    const totalRevenue = allLoads.reduce((sum, load) => {
       if (load.quotedCost) {
         const cost = parseFloat(load.quotedCost);
 
@@ -164,38 +136,32 @@ export async function GET(request: Request) {
     }, 0);
 
     // Total carrier costs (all loads with carrier costs)
-    const totalCarrierCosts = allLoads.reduce(
-      (sum: number, load: LoadSelect) => {
-        if (load.carrierCost) {
-          const cost = parseFloat(load.carrierCost);
+    const totalCarrierCosts = allLoads.reduce((sum, load) => {
+      if (load.carrierCost) {
+        const cost = parseFloat(load.carrierCost);
 
-          return sum + (isNaN(cost) ? 0 : cost);
-        }
+        return sum + (isNaN(cost) ? 0 : cost);
+      }
 
-        return sum;
-      },
-      0
-    );
+      return sum;
+    }, 0);
 
     // Profit margin (percentage) - only for completed loads with both quoted and carrier costs
     const completedLoadsWithBothCosts = completedLoads.filter(
-      (l: LoadSelect) => l.quotedCost && l.carrierCost
+      (l) => l.quotedCost && l.carrierCost
     );
     const profitMargin =
       completedLoadsWithBothCosts.length > 0
-        ? completedLoadsWithBothCosts.reduce(
-            (sum: number, load: LoadSelect) => {
-              const quoted = parseFloat(load.quotedCost!);
-              const carrier = parseFloat(load.carrierCost!);
+        ? completedLoadsWithBothCosts.reduce((sum, load) => {
+            const quoted = parseFloat(load.quotedCost!);
+            const carrier = parseFloat(load.carrierCost!);
 
-              if (!isNaN(quoted) && !isNaN(carrier) && quoted > 0) {
-                return sum + ((quoted - carrier) / quoted) * 100;
-              }
+            if (!isNaN(quoted) && !isNaN(carrier) && quoted > 0) {
+              return sum + ((quoted - carrier) / quoted) * 100;
+            }
 
-              return sum;
-            },
-            0
-          ) / completedLoadsWithBothCosts.length
+            return sum;
+          }, 0) / completedLoadsWithBothCosts.length
         : 0;
 
     // Completion rate
@@ -207,7 +173,7 @@ export async function GET(request: Request) {
 
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const recentLoads = allLoads.filter(
-      (l: LoadSelect) => new Date(l.createdAt) >= thirtyDaysAgo
+      (l) => new Date(l.createdAt) >= thirtyDaysAgo
     ).length;
 
     // Get loads from last 7 days
@@ -215,16 +181,16 @@ export async function GET(request: Request) {
 
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const weeklyLoads = allLoads.filter(
-      (l: LoadSelect) => new Date(l.createdAt) >= sevenDaysAgo
+      (l) => new Date(l.createdAt) >= sevenDaysAgo
     ).length;
 
     // Average days to complete (for completed loads)
     const completedWithDates = completedLoads.filter(
-      (l: LoadSelect) => l.createdAt && l.completedAt
+      (l) => l.createdAt && l.completedAt
     );
     const avgDaysToComplete =
       completedWithDates.length > 0
-        ? completedWithDates.reduce((sum: number, load: LoadSelect) => {
+        ? completedWithDates.reduce((sum, load) => {
             const created = new Date(load.createdAt);
             const completed = new Date(load.completedAt!);
             const days = Math.ceil(

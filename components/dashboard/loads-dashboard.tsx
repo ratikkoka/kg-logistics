@@ -20,6 +20,8 @@ import {
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 
+import { useLoads, useLoadsStats } from '@/lib/queries/loads';
+
 type Load = {
   id: string;
   leadId: string;
@@ -54,16 +56,6 @@ type LoadStatus =
   | 'COMPLETED';
 type LoadType = 'OPEN' | 'ENCLOSED';
 
-interface LoadsResponse {
-  loads: Load[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
 const statusColors: Record<
   LoadStatus,
   'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger'
@@ -83,138 +75,45 @@ const statusLabels: Record<LoadStatus, string> = {
   COMPLETED: 'Completed',
 };
 
-interface LoadStats {
-  total: number;
-  statusCounts: {
-    UNLISTED: number;
-    LISTED: number;
-    CARRIER_ASSIGNED: number;
-    PICKED_UP: number;
-    COMPLETED: number;
-  };
-  loadTypeCounts: {
-    OPEN: number;
-    ENCLOSED: number;
-  };
-  totalIncome: number;
-  totalProfit: number;
-  avgProfit: number;
-  totalRevenue: number;
-  totalCarrierCosts: number;
-  profitMargin: string;
-  completionRate: string;
-  recentLoads: number;
-  weeklyLoads: number;
-  avgDaysToComplete: string;
-  completedCount: number;
-}
-
 export default function LoadsDashboard() {
   const router = useRouter();
-  const [loads, setLoads] = useState<Load[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<LoadStats | null>(null);
-  const [statsLoading, setStatsLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<LoadStatus | 'all'>('all');
   const [loadTypeFilter, setLoadTypeFilter] = useState<LoadType | 'all'>('all');
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-
-  const fetchLoads = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '10',
-      });
-
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
-
-      if (loadTypeFilter !== 'all') {
-        params.append('loadType', loadTypeFilter);
-      }
-
-      if (search) {
-        params.append('search', search);
-      }
-
-      const response = await fetch(`/api/loads?${params.toString()}`);
-      const data: LoadsResponse = await response.json();
-
-      setLoads(data.loads);
-      setTotalPages(data.pagination.totalPages);
-      setTotal(data.pagination.total);
-    } catch (error) {
-      console.error('Error fetching loads:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStats = async () => {
-    setStatsLoading(true);
-    try {
-      // Build query params with current filters
-      const params = new URLSearchParams();
-
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
-      if (loadTypeFilter !== 'all') {
-        params.append('loadType', loadTypeFilter);
-      }
-      if (search) {
-        params.append('search', search);
-      }
-
-      const response = await fetch(`/api/loads/stats?${params.toString()}`);
-
-      if (response.ok) {
-        const data = await response.json();
-
-        setStats(data);
-      }
-    } catch (error) {
-      console.error('Error fetching load stats:', error);
-    } finally {
-      setStatsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLoads();
-  }, [page, statusFilter, loadTypeFilter]);
-
-  // Fetch stats when filters change (to reflect filtered data)
-  useEffect(() => {
-    fetchStats();
-  }, [statusFilter, loadTypeFilter]);
-
-  // Debounce stats fetch for search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchStats();
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [search]);
 
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (page === 1) {
-        fetchLoads();
-      } else {
+      setDebouncedSearch(search);
+      if (page !== 1) {
         setPage(1);
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, page]);
+
+  // Use React Query hooks
+  const { data: loadsData, isLoading: loading } = useLoads({
+    page,
+    limit: 10,
+    status: statusFilter,
+    loadType: loadTypeFilter,
+    search: debouncedSearch,
+  });
+
+  const { data: stats, isLoading: statsLoading } = useLoadsStats({
+    status: statusFilter,
+    loadType: loadTypeFilter,
+    search: debouncedSearch,
+  });
+
+  // Extract data from query results
+  const loads = loadsData?.loads || [];
+  const totalPages = loadsData?.pagination.totalPages || 1;
+  const total = loadsData?.pagination.total || 0;
 
   const formatDate = (date: Date | string | null) => {
     if (!date) return 'N/A';

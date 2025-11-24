@@ -34,37 +34,20 @@ export async function GET() {
       },
     });
 
-    type LeadSelect = {
-      status: string;
-      formType: string;
-      createdAt: Date;
-      openQuote: string | null;
-      enclosedQuote: string | null;
-    };
-
     // Calculate statistics
     const total = allLeads.length;
     const statusCounts = {
-      NEW: allLeads.filter((l: { status: string }) => l.status === 'NEW')
-        .length,
-      CONTACTED: allLeads.filter(
-        (l: { status: string }) => l.status === 'CONTACTED'
-      ).length,
-      QUOTED: allLeads.filter((l: { status: string }) => l.status === 'QUOTED')
-        .length,
-      CONVERTED: allLeads.filter(
-        (l: { status: string }) => l.status === 'CONVERTED'
-      ).length,
-      LOST: allLeads.filter((l: { status: string }) => l.status === 'LOST')
-        .length,
+      NEW: allLeads.filter((l) => l.status === 'NEW').length,
+      CONTACTED: allLeads.filter((l) => l.status === 'CONTACTED').length,
+      QUOTED: allLeads.filter((l) => l.status === 'QUOTED').length,
+      CONVERTED: allLeads.filter((l) => l.status === 'CONVERTED').length,
+      LOST: allLeads.filter((l) => l.status === 'LOST').length,
     };
 
     const formTypeCounts = {
-      CONTACT: allLeads.filter((l: LeadSelect) => l.formType === 'CONTACT')
+      CONTACT: allLeads.filter((l) => l.formType === 'CONTACT').length,
+      SHIPPING_QUOTE: allLeads.filter((l) => l.formType === 'SHIPPING_QUOTE')
         .length,
-      SHIPPING_QUOTE: allLeads.filter(
-        (l: LeadSelect) => l.formType === 'SHIPPING_QUOTE'
-      ).length,
     };
 
     // Calculate conversion rate
@@ -73,7 +56,7 @@ export async function GET() {
 
     // Calculate quotes with values
     const quotesWithValues = allLeads.filter(
-      (l: LeadSelect) => l.openQuote || l.enclosedQuote
+      (l) => l.openQuote || l.enclosedQuote
     ).length;
 
     // Get leads from last 30 days
@@ -81,7 +64,7 @@ export async function GET() {
 
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const recentLeads = allLeads.filter(
-      (l: LeadSelect) => new Date(l.createdAt) >= thirtyDaysAgo
+      (l) => new Date(l.createdAt) >= thirtyDaysAgo
     ).length;
 
     // Get leads from last 7 days
@@ -89,28 +72,25 @@ export async function GET() {
 
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const weeklyLeads = allLeads.filter(
-      (l: LeadSelect) => new Date(l.createdAt) >= sevenDaysAgo
+      (l) => new Date(l.createdAt) >= sevenDaysAgo
     ).length;
 
     // Calculate quote value statistics
     const leadsWithOpenQuote = allLeads.filter(
-      (l: LeadSelect) => l.openQuote && l.openQuote.trim() !== ''
+      (l) => l.openQuote && l.openQuote.trim() !== ''
     );
     const leadsWithEnclosedQuote = allLeads.filter(
-      (l: LeadSelect) => l.enclosedQuote && l.enclosedQuote.trim() !== ''
+      (l) => l.enclosedQuote && l.enclosedQuote.trim() !== ''
     );
 
-    const totalOpenQuoteValue = leadsWithOpenQuote.reduce(
-      (sum: number, lead: LeadSelect) => {
-        const value = parseFloat(lead.openQuote || '0');
+    const totalOpenQuoteValue = leadsWithOpenQuote.reduce((sum, lead) => {
+      const value = parseFloat(lead.openQuote || '0');
 
-        return sum + (isNaN(value) ? 0 : value);
-      },
-      0
-    );
+      return sum + (isNaN(value) ? 0 : value);
+    }, 0);
 
     const totalEnclosedQuoteValue = leadsWithEnclosedQuote.reduce(
-      (sum: number, lead: LeadSelect) => {
+      (sum, lead) => {
         const value = parseFloat(lead.enclosedQuote || '0');
 
         return sum + (isNaN(value) ? 0 : value);

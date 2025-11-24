@@ -21,6 +21,8 @@ import {
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 
+import { useContacts } from '@/lib/queries/contacts';
+
 type Contact = {
   id: string;
   formType: 'CONTACT';
@@ -38,16 +40,6 @@ type Contact = {
 };
 
 type ContactStatus = 'NEW' | 'CONTACTED' | 'QUOTED' | 'CONVERTED' | 'LOST';
-
-interface ContactsResponse {
-  leads: Contact[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
 
 const statusColors: Record<
   ContactStatus,
@@ -70,62 +62,36 @@ const statusLabels: Record<ContactStatus, string> = {
 
 export default function ContactsDashboard() {
   const router = useRouter();
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<ContactStatus | 'all'>(
     'all'
   );
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [, setTotal] = useState(0);
-
-  const fetchContacts = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '10',
-        formType: 'CONTACT', // Always filter for CONTACT type
-      });
-
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
-
-      if (search) {
-        params.append('search', search);
-      }
-
-      const response = await fetch(`/api/leads?${params.toString()}`);
-      const data: ContactsResponse = await response.json();
-
-      setContacts(data.leads);
-      setTotalPages(data.pagination.totalPages);
-      setTotal(data.pagination.total);
-    } catch (error) {
-      console.error('Error fetching contacts:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchContacts();
-  }, [page, statusFilter]);
 
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (page === 1) {
-        fetchContacts();
-      } else {
+      setDebouncedSearch(search);
+      if (page !== 1) {
         setPage(1);
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, page]);
+
+  // Use React Query hook
+  const { data: contactsData, isLoading: loading } = useContacts({
+    page,
+    limit: 10,
+    status: statusFilter,
+    search: debouncedSearch,
+  });
+
+  // Extract data from query results
+  const contacts = contactsData?.leads || [];
+  const totalPages = contactsData?.pagination.totalPages || 1;
 
   const getContactName = (contact: Contact) => {
     if (contact.firstName || contact.lastName) {

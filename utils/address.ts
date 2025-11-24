@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // Address parsing utilities
 
 export interface ParsedAddress {

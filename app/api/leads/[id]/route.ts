@@ -1,9 +1,9 @@
+import type { LeadStatus } from '@prisma/client';
+
 import { NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
-
-type LeadStatus = 'NEW' | 'CONTACTED' | 'QUOTED' | 'CONVERTED' | 'LOST';
 
 const sanitizeQuoteValue = (value: unknown) => {
   if (typeof value !== 'string') return null;

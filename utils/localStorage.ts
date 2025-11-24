@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // Utility functions for localStorage with error handling
 
 export const localStorageService = {

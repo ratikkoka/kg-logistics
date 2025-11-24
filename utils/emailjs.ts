@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // EmailJS utility with error handling
 
 import emailjs from '@emailjs/browser';

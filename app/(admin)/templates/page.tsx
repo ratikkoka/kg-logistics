@@ -1,9 +1,25 @@
-import { checkAdminAccess } from '@/lib/auth-check';
+import { redirect } from 'next/navigation';
+
+import { createClient } from '@/lib/supabase/server';
+import { isUserAuthorized } from '@/lib/auth';
 import TemplatesManager from '@/components/templates/templates-manager';
 
 export default async function TemplatesPage() {
-  // Check authentication and authorization (cached per request)
-  await checkAdminAccess();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  // Check authorization (hasAccess)
+  const authorized = await isUserAuthorized(user.id);
+
+  if (!authorized) {
+    redirect('/unauthorized');
+  }
 
   return (
     <>

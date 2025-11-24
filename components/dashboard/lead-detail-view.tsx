@@ -22,6 +22,9 @@ import {
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 
+import { useInvalidateLeads } from '@/lib/queries/leads';
+import { useInvalidateLoads } from '@/lib/queries/loads';
+
 type Lead = {
   id: string;
   formType: 'CONTACT' | 'SHIPPING_QUOTE';
@@ -94,6 +97,8 @@ type EmailTemplate = {
 
 export default function LeadDetailView({ lead }: LeadDetailViewProps) {
   const router = useRouter();
+  const invalidateLeads = useInvalidateLeads();
+  const invalidateLoads = useInvalidateLoads();
   const [status, setStatus] = useState<Lead['status']>(lead.status);
   const [notes, setNotes] = useState(lead.notes || '');
   const sanitizeQuoteValue = (value: string) => value.replace(/\D/g, '');
@@ -137,6 +142,8 @@ export default function LeadDetailView({ lead }: LeadDetailViewProps) {
 
       if (response.ok) {
         setStatus(newStatus);
+        // Invalidate cache to refresh dashboard
+        invalidateLeads();
       }
     } catch (error) {
       console.error('Error updating status:', error);
@@ -158,6 +165,8 @@ export default function LeadDetailView({ lead }: LeadDetailViewProps) {
 
       if (response.ok) {
         // Notes saved successfully
+        // Invalidate cache to refresh dashboard
+        invalidateLeads();
       }
     } catch (error) {
       console.error('Error updating notes:', error);
@@ -186,6 +195,8 @@ export default function LeadDetailView({ lead }: LeadDetailViewProps) {
       if (response.ok) {
         setOpenQuote(sanitizedOpen);
         setEnclosedQuote(sanitizedEnclosed);
+        // Invalidate cache to refresh dashboard stats
+        invalidateLeads();
       }
     } catch (error) {
       console.error('Error updating quotes:', error);
@@ -963,6 +974,85 @@ export default function LeadDetailView({ lead }: LeadDetailViewProps) {
                         if (response.ok) {
                           const load = await response.json();
 
+                          // Invalidate both leads and loads cache
+                          invalidateLeads();
+                          invalidateLoads();
+                          router.push(`/loads/${load.id}`);
+                        } else {
+                          const error = await response.json();
+
+                          alert(error.error || 'Failed to create load');
+                        }
+                      } catch (error) {
+                        console.error('Error creating load:', error);
+                        alert('Failed to create load');
+                      } finally {
+                        setIsConverting(false);
+                        onClose();
+                      }
+                    }}
+                  >
+                    <SelectItem key='OPEN'>Open</SelectItem>
+                    <SelectItem key='ENCLOSED'>Enclosed</SelectItem>
+                  </Select>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  isDisabled={isConverting}
+                  variant='light'
+                  onPress={onClose}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Convert to Load Modal */}
+      <Modal isOpen={isConvertOpen} onOpenChange={onConvertOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Convert Lead to Load</ModalHeader>
+              <ModalBody>
+                <div className='space-y-4'>
+                  <p className='text-default-500 text-sm'>
+                    Select the load type for this shipment. This will create a
+                    new load and mark the lead as converted.
+                  </p>
+                  <Select
+                    label='Load Type'
+                    placeholder='Select load type'
+                    selectedKeys={[]}
+                    onSelectionChange={async (keys) => {
+                      const loadType = Array.from(keys)[0] as
+                        | 'OPEN'
+                        | 'ENCLOSED';
+
+                      if (!loadType) return;
+
+                      setIsConverting(true);
+                      try {
+                        const response = await fetch('/api/loads', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            leadId: lead.id,
+                            loadType,
+                          }),
+                        });
+
+                        if (response.ok) {
+                          const load = await response.json();
+
+                          // Invalidate both leads and loads cache
+                          invalidateLeads();
+                          invalidateLoads();
                           router.push(`/loads/${load.id}`);
                         } else {
                           const error = await response.json();

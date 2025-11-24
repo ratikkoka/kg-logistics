@@ -15,6 +15,8 @@ import {
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 
+import { useInvalidateLoads } from '@/lib/queries/loads';
+
 type Load = {
   id: string;
   leadId: string;
@@ -84,6 +86,7 @@ export default function LoadDetailView({
   load: initialLoad,
 }: LoadDetailViewProps) {
   const router = useRouter();
+  const invalidateLoads = useInvalidateLoads();
   const [load, setLoad] = useState<Load>(initialLoad);
   const [status, setStatus] = useState<Load['status']>(initialLoad.status);
   const [pickupContactName, setPickupContactName] = useState(
@@ -135,6 +138,8 @@ export default function LoadDetailView({
 
         setLoad(updated);
         setStatus(newStatus);
+        // Invalidate cache to refresh dashboard
+        invalidateLoads();
       }
     } catch (error) {
       console.error('Error updating status:', error);
@@ -163,6 +168,8 @@ export default function LoadDetailView({
         const updated = await response.json();
 
         setLoad(updated);
+        // Invalidate cache to refresh dashboard
+        invalidateLoads();
       }
     } catch (error) {
       console.error('Error updating contacts:', error);
@@ -193,6 +200,8 @@ export default function LoadDetailView({
         setQuotedCost(updated.quotedCost || '');
         setCarrierCost(updated.carrierCost || '');
         setCarrierName(updated.carrierName || '');
+        // Invalidate cache to refresh dashboard stats
+        invalidateLoads();
       }
     } catch (error) {
       console.error('Error updating financial info:', error);

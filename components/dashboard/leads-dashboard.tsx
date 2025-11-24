@@ -21,6 +21,8 @@ import {
   Pagination,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
+
+import { useLeads, useLeadsStats } from '@/lib/queries/leads';
 // Using Prisma types - will be available after migration
 type Lead = {
   id: string;
@@ -58,16 +60,6 @@ type Lead = {
 type LeadStatus = 'NEW' | 'CONTACTED' | 'QUOTED' | 'CONVERTED' | 'LOST';
 type FormType = 'CONTACT' | 'SHIPPING_QUOTE';
 
-interface LeadsResponse {
-  leads: Lead[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
 const statusColors: Record<
   LeadStatus,
   'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger'
@@ -87,115 +79,43 @@ const statusLabels: Record<LeadStatus, string> = {
   LOST: 'Lost',
 };
 
-interface DashboardStats {
-  total: number;
-  statusCounts: {
-    NEW: number;
-    CONTACTED: number;
-    QUOTED: number;
-    CONVERTED: number;
-    LOST: number;
-  };
-  formTypeCounts: {
-    CONTACT: number;
-    SHIPPING_QUOTE: number;
-  };
-  conversionRate: string;
-  quotesWithValues: number;
-  recentLeads: number;
-  weeklyLeads: number;
-  avgOpenQuote: number;
-  avgEnclosedQuote: number;
-  totalOpenQuoteValue: number;
-  totalEnclosedQuoteValue: number;
-}
-
 export default function LeadsDashboard() {
   const router = useRouter();
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [statsLoading, setStatsLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<LeadStatus | 'all'>('all');
   const [formTypeFilter, setFormTypeFilter] = useState<FormType | 'all'>(
     'SHIPPING_QUOTE'
   );
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-
-  const fetchLeads = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '10',
-      });
-
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
-      }
-
-      if (formTypeFilter !== 'all') {
-        params.append('formType', formTypeFilter);
-      }
-
-      if (search) {
-        params.append('search', search);
-      }
-
-      const response = await fetch(`/api/leads?${params.toString()}`);
-      const data: LeadsResponse = await response.json();
-
-      setLeads(data.leads);
-      setTotalPages(data.pagination.totalPages);
-      setTotal(data.pagination.total);
-    } catch (error) {
-      console.error('Error fetching leads:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStats = async () => {
-    setStatsLoading(true);
-    try {
-      const response = await fetch('/api/dashboard/stats');
-
-      if (response.ok) {
-        const data = await response.json();
-
-        setStats(data);
-      }
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    } finally {
-      setStatsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLeads();
-  }, [page, statusFilter, formTypeFilter]);
-
-  // Fetch stats only once on mount
-  useEffect(() => {
-    fetchStats();
-  }, []);
 
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (page === 1) {
-        fetchLeads();
-      } else {
+      setDebouncedSearch(search);
+      if (page !== 1) {
         setPage(1);
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, page]);
+
+  // Use React Query hooks
+  const { data: leadsData, isLoading: loading } = useLeads({
+    page,
+    limit: 10,
+    status: statusFilter,
+    formType: formTypeFilter,
+    search: debouncedSearch,
+  });
+
+  const { data: stats, isLoading: statsLoading } = useLeadsStats();
+
+  // Extract data from query results
+  const leads = leadsData?.leads || [];
+  const totalPages = leadsData?.pagination.totalPages || 1;
+  const total = leadsData?.pagination.total || 0;
 
   const formatDate = (date: Date | string | null) => {
     if (!date) return 'N/A';
@@ -266,9 +186,7 @@ export default function LeadsDashboard() {
           />
         </svg>
         <div className='absolute inset-0 flex items-center justify-center'>
-          <span className='text-lg font-bold sm:text-xl md:text-2xl'>
-            {Math.round(percentage)}%
-          </span>
+          <span className='text-2xl font-bold'>{Math.round(percentage)}%</span>
         </div>
       </div>
     );
@@ -395,7 +313,7 @@ export default function LeadsDashboard() {
                 <Spinner size='lg' />
               </div>
             ) : (
-              <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5'>
+              <div className='grid grid-cols-5 gap-4'>
                 {(
                   [
                     'NEW',
@@ -420,19 +338,15 @@ export default function LeadsDashboard() {
                       key={status}
                       className='flex flex-col items-center gap-2'
                     >
-                      <div className='scale-75 sm:scale-90 md:scale-100'>
-                        <CircularProgress
-                          color={colors[status]}
-                          percentage={percentage}
-                          size={100}
-                          strokeWidth={6}
-                        />
-                      </div>
+                      <CircularProgress
+                        color={colors[status]}
+                        percentage={percentage}
+                        size={100}
+                        strokeWidth={6}
+                      />
                       <div className='text-center'>
-                        <div className='text-xs font-semibold sm:text-sm'>
-                          {count}
-                        </div>
-                        <div className='text-default-500 text-[10px] sm:text-xs'>
+                        <div className='text-sm font-semibold'>{count}</div>
+                        <div className='text-default-500 text-xs'>
                           {statusLabels[status]}
                         </div>
                       </div>
