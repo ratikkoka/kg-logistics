@@ -1,14 +1,11 @@
 'use client';
 import { usePathname } from 'next/navigation';
+import { type ReactNode } from 'react';
 import clsx from 'clsx';
 
 import { Navbar } from '@/components/navbar';
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MainLayout({ children }: { children: ReactNode }) {
   const pathName = usePathname();
 
   return (
