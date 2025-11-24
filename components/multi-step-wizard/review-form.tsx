@@ -85,6 +85,41 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
       );
 
       if (result.success) {
+        // Save lead to database
+        try {
+          await fetch('/api/leads', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              formType: 'SHIPPING_QUOTE',
+              firstName: contactValues.firstName,
+              lastName: contactValues.lastName,
+              email: contactValues.email,
+              phone: contactValues.tel,
+              vin: vehicleValues.vin,
+              year: vehicleValues.year,
+              make: vehicleValues.make,
+              model: vehicleValues.model,
+              transportType: vehicleValues.transportType,
+              pickupDate: addressValues.pickupDate,
+              dropoffDate: addressValues.dropoffDate,
+              pickupAddress: addressValues.pickupAddress,
+              pickupCity: addressValues.pickupCity,
+              pickupState: addressValues.pickupState,
+              pickupZip: addressValues.pickupZip,
+              dropoffAddress: addressValues.dropoffAddress,
+              dropoffCity: addressValues.dropoffCity,
+              dropoffState: addressValues.dropoffState,
+              dropoffZip: addressValues.dropoffZip,
+            }),
+          });
+        } catch (error) {
+          // Log error but don't fail the form submission
+          console.error('Error saving lead to database:', error);
+        }
+
         localStorageService.clear();
         setIsSubmitted(true);
         props.onSubmitSuccess?.();

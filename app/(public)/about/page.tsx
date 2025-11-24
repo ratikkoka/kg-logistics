@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardBody } from '@heroui/react';
 
-import { FeatureCard } from '../../components/feature-card/feature-card';
+import { FeatureCard } from '@/components/feature-card/feature-card';
 
 export default function AboutPage() {
   return (

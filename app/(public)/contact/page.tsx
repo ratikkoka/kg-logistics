@@ -26,6 +26,7 @@ import { Controller, useForm } from 'react-hook-form';
 import faqs from './faqs';
 
 import { sendEmail } from '@/utils/emailjs';
+import { formatPhoneNumber, validatePhone } from '@/utils/validation';
 
 export default function ContactPage() {
   const inputProps: Pick<InputProps, 'labelPlacement' | 'classNames'> = {
@@ -63,6 +64,31 @@ export default function ContactPage() {
     );
 
     if (result.success) {
+      // Save lead to database
+      try {
+        const nameParts = data.contactName.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        await fetch('/api/leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            formType: 'CONTACT',
+            firstName,
+            lastName,
+            email: data.contactEmail || data.contactTel || '',
+            phone: data.contactTel || null,
+            message: data.contactMessage,
+          }),
+        });
+      } catch (error) {
+        // Log error but don't fail the form submission
+        console.error('Error saving lead to database:', error);
+      }
+
       setIsSubmitted(true);
       onClose();
     } else {
@@ -188,19 +214,43 @@ export default function ContactPage() {
                   <Controller
                     control={control}
                     name='contactTel'
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <Input
                         {...field}
-                        {...register('contactTel')}
                         className='col-span-12 md:col-span-6'
-                        errorMessage='Mobile Number is required'
+                        errorMessage={
+                          fieldState.error?.message ||
+                          'Mobile Number is required'
+                        }
+                        isInvalid={fieldState.invalid}
                         isRequired={contactType === 'text'}
                         label='Mobile Number'
                         placeholder='xxx-xxx-xxxx'
                         type='tel'
+                        onChange={(e) => {
+                          const formatted = formatPhoneNumber(e.target.value);
+
+                          field.onChange(formatted);
+                        }}
                         {...inputProps}
                       />
                     )}
+                    rules={{
+                      required:
+                        contactType === 'text'
+                          ? 'Mobile Number is required'
+                          : false,
+                      validate: (value) => {
+                        if (contactType === 'text' && value) {
+                          return (
+                            validatePhone(value) ||
+                            'Please enter a valid 10-digit phone number'
+                          );
+                        }
+
+                        return true;
+                      },
+                    }}
                   />
                   <Controller
                     control={control}

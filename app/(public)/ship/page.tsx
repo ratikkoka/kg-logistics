@@ -7,11 +7,11 @@ import { Button, cn } from '@heroui/react';
 import clsx from 'clsx';
 import { Icon } from '@iconify/react';
 
-import MultistepSidebar from '../../components/multi-step-wizard/multistep-sidebar';
-import ContactInformationForm from '../../components/multi-step-wizard/contact-information-form';
-import VehicleInformationForm from '../../components/multi-step-wizard/vehicle-information-form';
-import ChooseAddressForm from '../../components/multi-step-wizard/choose-address-form';
-import ReviewForm from '../../components/multi-step-wizard/review-form';
+import MultistepSidebar from '@/components/multi-step-wizard/multistep-sidebar';
+import ContactInformationForm from '@/components/multi-step-wizard/contact-information-form';
+import VehicleInformationForm from '@/components/multi-step-wizard/vehicle-information-form';
+import ChooseAddressForm from '@/components/multi-step-wizard/choose-address-form';
+import ReviewForm from '@/components/multi-step-wizard/review-form';
 
 const variants = {
   enter: (direction: number) => ({

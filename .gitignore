@@ -36,3 +36,5 @@ next-env.d.ts
 
 # variables
 .env
+
+/app/generated/prisma

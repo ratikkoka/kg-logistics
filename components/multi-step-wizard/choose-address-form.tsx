@@ -119,7 +119,6 @@ const ChooseAddressForm = React.forwardRef<
             );
           }
         } catch (error) {
-          // eslint-disable-next-line no-console
           console.error('Error parsing pickup date:', error);
         }
       }
@@ -145,7 +144,6 @@ const ChooseAddressForm = React.forwardRef<
             );
           }
         } catch (error) {
-          // eslint-disable-next-line no-console
           console.error('Error parsing dropoff date:', error);
         }
       }
@@ -191,7 +189,6 @@ const ChooseAddressForm = React.forwardRef<
     getDetails(param)
       .then((details) => {
         if (!details || typeof details === 'string') {
-          // eslint-disable-next-line no-console
           console.error('Invalid address details');
 
           return;
@@ -233,7 +230,6 @@ const ChooseAddressForm = React.forwardRef<
         }
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
         console.error('Error getting address details:', error);
       });
   };
@@ -250,7 +246,6 @@ const ChooseAddressForm = React.forwardRef<
     getDetails(param)
       .then((details) => {
         if (!details || typeof details === 'string') {
-          // eslint-disable-next-line no-console
           console.error('Invalid address details');
 
           return;
@@ -292,7 +287,6 @@ const ChooseAddressForm = React.forwardRef<
         }
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
         console.error('Error getting address details:', error);
       });
   };

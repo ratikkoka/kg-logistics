@@ -4,7 +4,7 @@ import { validate, sanitize, getRegion, getMake, getYear } from './lib';
 import { uri, action, format } from './lib/nhtsa.js';
 
 class Vindec {
-  constructor(vin, callback) {
+  constructor(_vin, _callback) {
     this.vin = '';
     this.callback = () => {};
     this.vindecated = {};
@@ -12,7 +12,7 @@ class Vindec {
   validate(vin) {
     return validate(vin);
   }
-  decode(vin, callback) {
+  decode(vin, _callback) {
     return this.validate(vin)
       ? sanitize({
           vin: vin,

@@ -47,8 +47,8 @@ const MultiStepSidebar = React.forwardRef<
       className,
       currentPage,
       isSubmitted,
-      onBack,
-      onNext,
+      onBack: _onBack,
+      onNext: _onNext,
       onChangePage,
       ...props
     },

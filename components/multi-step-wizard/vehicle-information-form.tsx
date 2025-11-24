@@ -131,7 +131,7 @@ const VehicleInformationForm = React.forwardRef<
           setVinError(
             'Failed to decode VIN. Please enter vehicle details manually.'
           );
-          // eslint-disable-next-line no-console
+
           console.error('Error decoding VIN:', err);
           setValue('year', '');
           setValue('make', '');

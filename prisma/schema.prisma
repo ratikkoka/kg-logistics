@@ -1,0 +1,196 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+// Lead status enum
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  CONVERTED
+  LOST
+}
+
+// Form type enum
+enum FormType {
+  CONTACT
+  SHIPPING_QUOTE
+}
+
+// Lead model - stores all form submissions
+model Lead {
+  id              String      @id @default(uuid())
+  formType        FormType
+  status          LeadStatus  @default(NEW)
+  
+  // Contact information
+  firstName       String?
+  lastName        String?
+  email           String
+  phone           String?
+  
+  // Vehicle information (for shipping quotes)
+  vin             String?
+  year            String?
+  make            String?
+  model           String?
+  transportType   String?     // 'enclosed' | 'open' | 'both'
+  
+  // Address information (for shipping quotes)
+  pickupDate      DateTime?
+  dropoffDate     DateTime?
+  pickupAddress   String?
+  pickupCity      String?
+  pickupState     String?
+  pickupZip       String?
+  dropoffAddress  String?
+  dropoffCity     String?
+  dropoffState    String?
+  dropoffZip      String?
+  
+  // Quotes / Message / Notes
+  openQuote       String?
+  enclosedQuote   String?
+  message         String?
+  notes           String?     // Internal notes
+  
+  // Assignment and tracking
+  assignedTo      String?     // User ID from Supabase Auth
+  lastContactedAt DateTime?
+  
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Relations
+  emails          EmailHistory[]
+  load            Load?         // One lead can become one load
+  
+  @@index([status])
+  @@index([formType])
+  @@index([email])
+  @@index([createdAt])
+}
+
+// Email template model
+model EmailTemplate {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  subject     String
+  body        String   // Template body with variables like {{lead.name}}
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  emails      EmailHistory[]
+}
+
+// Email history - tracks all emails sent to leads
+model EmailHistory {
+  id          String   @id @default(uuid())
+  leadId      String
+  templateId  String?  // Nullable if sent without template
+  sentTo      String   // Email address
+  subject     String
+  body        String
+  sentBy      String?  // User ID from Supabase Auth
+  sentAt      DateTime @default(now())
+
+  // Relations
+  lead        Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  template    EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  @@index([leadId])
+  @@index([sentAt])
+}
+
+// User profiles - extends auth.users with access control
+// This table is created via SQL migration and references auth.users
+// See: https://supabase.com/docs/guides/auth/managing-user-data
+model Profile {
+  id          String   @id @db.Uuid
+  hasAccess   Boolean  @default(false) @map("has_access")
+  name        String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("profiles")
+  @@index([hasAccess])
+}
+
+// Load status enum
+enum LoadStatus {
+  UNLISTED
+  LISTED
+  CARRIER_ASSIGNED
+  PICKED_UP
+  COMPLETED
+}
+
+// Load type enum
+enum LoadType {
+  OPEN
+  ENCLOSED
+}
+
+// Load model - represents active loads from converted leads
+model Load {
+  id              String      @id @default(uuid())
+  leadId          String       @unique // Link to original lead
+  status          LoadStatus   @default(LISTED)
+  loadType        LoadType     // OPEN or ENCLOSED (single selection)
+  
+  // Vehicle information (from lead)
+  vin             String?
+  year            String?
+  make            String?
+  model           String?
+  
+  // Address information (from lead)
+  pickupDate      DateTime?
+  dropoffDate     DateTime?
+  pickupAddress   String?
+  pickupCity      String?
+  pickupState     String?
+  pickupZip       String?
+  dropoffAddress  String?
+  dropoffCity     String?
+  dropoffState    String?
+  dropoffZip      String?
+  
+  // Contact information
+  pickupContactName    String?
+  pickupContactPhone   String?
+  dropoffContactName   String?
+  dropoffContactPhone  String?
+  
+  // Financial information
+  quotedCost      String?      // Quoted cost to customer
+  carrierCost     String?      // Cost paid to carrier
+  carrierName     String?      // Name of the carrier
+  // Profit is calculated: quotedCost - carrierCost
+  
+  // Assignment and tracking
+  assignedTo      String?      // User ID from Supabase Auth
+  completedAt     DateTime?
+  
+  // Timestamps
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  // Relations
+  lead            Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  @@index([status])
+  @@index([loadType])
+  @@index([createdAt])
+  @@index([leadId])
+}

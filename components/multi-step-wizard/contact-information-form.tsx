@@ -22,7 +22,7 @@ export type ContactInformationFormProps = FormProps & {
 const ContactInformationForm = React.forwardRef<
   HTMLFormElement,
   ContactInformationFormProps
->(({ className, onNext, ...props }, ref) => {
+>(({ className, onNext, ..._props }, _ref) => {
   const inputProps: Pick<InputProps, 'labelPlacement' | 'classNames'> = {
     labelPlacement: 'outside',
     classNames: {
@@ -31,20 +31,15 @@ const ContactInformationForm = React.forwardRef<
     },
   };
 
-  const {
-    control,
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<ContactInformation>({
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      tel: '',
-    },
-  });
+  const { control, register, handleSubmit, setValue } =
+    useForm<ContactInformation>({
+      defaultValues: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        tel: '',
+      },
+    });
 
   const onSubmit = (data: ContactInformation) => {
     localStorageService.set('contact-info', data);
@@ -69,7 +64,7 @@ const ContactInformationForm = React.forwardRef<
 
   return (
     <form id='contact-info' onSubmit={handleSubmit(onSubmit)}>
-      <div className='text-3xl font-bold leading-9 text-default-foreground'>
+      <div className='text-default-foreground text-3xl leading-9 font-bold'>
         Contact Information
       </div>
       <div
