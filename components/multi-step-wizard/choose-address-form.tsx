@@ -34,6 +34,13 @@ const ChooseAddressForm = React.forwardRef<
     },
   };
 
+  const datePickerProps = {
+    classNames: {
+      label:
+        'text-small font-medium text-default-700 group-data-[filled-within=true]:text-default-700',
+    },
+  };
+
   type AddressFormData = Omit<
     AddressInformation,
     'pickupDate' | 'dropoffDate'
@@ -292,10 +299,10 @@ const ChooseAddressForm = React.forwardRef<
 
   return (
     <>
-      <div className='text-3xl font-bold leading-9 text-default-foreground'>
+      <div className='text-default-foreground text-3xl leading-9 font-bold'>
         Address Information
       </div>
-      <div className='py-4 text-default-500'>
+      <div className='text-default-500 py-4'>
         Please provide the pickup and dropoff addresses
       </div>
       <form
@@ -305,7 +312,7 @@ const ChooseAddressForm = React.forwardRef<
         onSubmit={handleSubmit(onSubmit)}
         {...props}
       >
-        <div className='text-xl font-semibold text-default-700'>
+        <div className='text-default-700 text-xl font-semibold'>
           Pickup and Dropoff Dates
         </div>
         <div className='grid grid-cols-12 gap-4'>
@@ -317,10 +324,11 @@ const ChooseAddressForm = React.forwardRef<
                 isRequired
                 className='col-span-6 md:col-span-6'
                 label='Earliest Pickup Date'
+                labelPlacement='outside'
                 minValue={today(getLocalTimeZone()).add({ days: 1 })}
                 value={field.value}
                 onChange={field.onChange}
-                {...inputProps}
+                {...datePickerProps}
               />
             )}
           />
@@ -331,15 +339,16 @@ const ChooseAddressForm = React.forwardRef<
               <DatePicker
                 className='col-span-6 md:col-span-6'
                 label='Preferred Dropoff Date'
+                labelPlacement='outside'
                 minValue={today(getLocalTimeZone()).add({ days: 2 })}
                 value={field.value}
                 onChange={field.onChange}
-                {...inputProps}
+                {...datePickerProps}
               />
             )}
           />
         </div>
-        <div className='mt-10 text-xl font-semibold text-default-700'>
+        <div className='text-default-700 mt-10 text-xl font-semibold'>
           Pickup Address
         </div>
         <Controller
@@ -417,7 +426,7 @@ const ChooseAddressForm = React.forwardRef<
           />
         </div>
 
-        <div className='mt-10 text-xl font-semibold text-default-700'>
+        <div className='text-default-700 mt-10 text-xl font-semibold'>
           Dropoff Address
         </div>
         <Controller
