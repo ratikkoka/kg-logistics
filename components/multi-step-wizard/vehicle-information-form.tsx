@@ -1,13 +1,18 @@
 'use client';
 
 import type { InputProps } from '@heroui/react';
+import type { VehicleInformation } from '@/types/forms';
 
 import React from 'react';
-import { Input, RadioGroup, Radio } from '@heroui/react';
+import { Input, RadioGroup, Radio, Spinner } from '@heroui/react';
 import { cn } from '@heroui/react';
 import { Controller, useForm } from 'react-hook-form';
 
 import Vindec from '../vindec';
+
+import { localStorageService } from '@/utils/localStorage';
+import { validateVIN } from '@/utils/validation';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export type VehicleInformationFormProps =
   React.HTMLAttributes<HTMLFormElement> & {
@@ -17,7 +22,7 @@ export type VehicleInformationFormProps =
 const VehicleInformationForm = React.forwardRef<
   HTMLFormElement,
   VehicleInformationFormProps
->(({ className, onNext, ...props }, ref) => {
+>(({ className, onNext }, _ref) => {
   const inputProps: Pick<InputProps, 'labelPlacement' | 'classNames'> = {
     labelPlacement: 'outside',
     classNames: {
@@ -26,63 +31,130 @@ const VehicleInformationForm = React.forwardRef<
     },
   };
 
-  const { control, handleSubmit, setValue, watch, register } = useForm();
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<VehicleInformation>({
+    defaultValues: {
+      vin: '',
+      year: '',
+      make: '',
+      model: '',
+      transportType: 'both',
+    },
+  });
+
   const vin = watch('vin');
+  const debouncedVin = useDebounce(vin, 500);
   const isVinValid = React.useRef(false);
+  const [isDecodingVin, setIsDecodingVin] = React.useState(false);
+  const [vinError, setVinError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('vehicle-info') ?? '{}');
+    const data = localStorageService.get<VehicleInformation>('vehicle-info', {
+      vin: '',
+      year: '',
+      make: '',
+      model: '',
+      transportType: 'both',
+    });
 
-    if (data) {
+    if (data && Object.keys(data).length > 0) {
       if (data.vin) {
         setValue('vin', data.vin);
         isVinValid.current = true;
       }
-      setValue('year', data.year);
-      setValue('make', data.make);
-      setValue('model', data.model);
-      setValue('transportType', data.transportType);
+      setValue('year', data.year || '');
+      setValue('make', data.make || '');
+      setValue('model', data.model || '');
+      setValue('transportType', data.transportType || 'both');
     }
   }, [setValue]);
 
-  const handleVinChange = async (vin: string) => {
-    setValue('vin', vin);
+  // Debounced VIN decoding
+  React.useEffect(() => {
+    const decodeVin = async (vinValue: string) => {
+      if (!vinValue || vinValue.length !== 17) {
+        isVinValid.current = false;
+        setVinError(null);
+        if (vinValue.length > 0 && vinValue.length < 17) {
+          setVinError('VIN must be exactly 17 characters');
+        }
+        setValue('year', '');
+        setValue('make', '');
+        setValue('model', '');
 
-    if (vin.length === 17) {
-      // Only trigger VIN check after 17 characters
+        return;
+      }
+
+      if (!validateVIN(vinValue)) {
+        isVinValid.current = false;
+        setVinError(
+          'Invalid VIN format. VINs cannot contain I, O, Q. or symbols.'
+        );
+        setValue('year', '');
+        setValue('make', '');
+        setValue('model', '');
+
+        return;
+      }
+
       const vindec = new Vindec();
 
-      if (vindec.validate(vin)) {
-        isVinValid.current = true;
+      if (vindec.validate(vinValue)) {
+        setIsDecodingVin(true);
+        setVinError(null);
         try {
-          const res = await vindec.nhtsa(vin);
+          const res = await vindec.nhtsa(vinValue);
           const decodedVehicle = res.data.Results[0];
 
           if (decodedVehicle) {
+            isVinValid.current = true;
             setValue('year', decodedVehicle.ModelYear || '');
             setValue('make', decodedVehicle.Make || '');
             setValue('model', decodedVehicle.Model || '');
+            setVinError(null);
+          } else {
+            isVinValid.current = false;
+            setVinError(
+              'VIN not found in database. Please enter vehicle details manually.'
+            );
+            setValue('year', '');
+            setValue('make', '');
+            setValue('model', '');
           }
         } catch (err) {
+          isVinValid.current = false;
+          setVinError(
+            'Failed to decode VIN. Please enter vehicle details manually.'
+          );
+          // eslint-disable-next-line no-console
           console.error('Error decoding VIN:', err);
+          setValue('year', '');
+          setValue('make', '');
+          setValue('model', '');
+        } finally {
+          setIsDecodingVin(false);
         }
       } else {
         isVinValid.current = false;
-        console.error('Invalid VIN');
+        setVinError('Invalid VIN. Please check and try again.');
         setValue('year', '');
         setValue('make', '');
         setValue('model', '');
       }
-    } else {
-      isVinValid.current = false;
-      setValue('year', '');
-      setValue('make', '');
-      setValue('model', '');
-    }
-  };
+    };
 
-  const onSubmit = (data: any) => {
-    localStorage.setItem('vehicle-info', JSON.stringify(data));
+    if (debouncedVin) {
+      decodeVin(debouncedVin);
+    }
+  }, [debouncedVin, setValue]);
+
+  const onSubmit = (data: VehicleInformation) => {
+    localStorageService.set('vehicle-info', data);
     onNext();
   };
 
@@ -117,15 +189,18 @@ const VehicleInformationForm = React.forwardRef<
           render={({ field, fieldState }) => (
             <Input
               {...field}
-              {...register('vin')} // Register the field
               className='col-span-12'
-              errorMessage={fieldState.error?.message}
-              isInvalid={fieldState.invalid}
-              label='VIN'
-              placeholder='Enter your VIN'
+              endContent={isDecodingVin ? <Spinner size='sm' /> : null}
+              errorMessage={vinError || fieldState.error?.message}
+              isInvalid={!!vinError || fieldState.invalid}
+              label='VIN (Optional)'
+              maxLength={17}
+              placeholder='Enter your VIN (17 characters)'
               onChange={(e) => {
-                field.onChange(e);
-                handleVinChange(e.target.value);
+                const value = e.target.value.toUpperCase();
+
+                field.onChange(value);
+                setVinError(null);
               }}
               {...inputProps}
             />
@@ -139,10 +214,10 @@ const VehicleInformationForm = React.forwardRef<
             render={({ field }) => (
               <Input
                 {...field}
-                {...register('year')} // Register the field
                 className='col-span-4'
-                errorMessage='Year is required'
-                isRequired={!isVinValid.current} // Added isRequired conditionally
+                errorMessage={errors.year?.message || 'Year is required'}
+                isInvalid={!!errors.year}
+                isRequired={!isVinValid.current}
                 label='Year'
                 placeholder='Year'
                 readOnly={isVinValid.current}
@@ -157,10 +232,10 @@ const VehicleInformationForm = React.forwardRef<
             render={({ field }) => (
               <Input
                 {...field}
-                {...register('make')} // Register the field
                 className='col-span-4'
-                errorMessage='Make is required'
-                isRequired={!isVinValid.current} // Added isRequired conditionally
+                errorMessage={errors.make?.message || 'Make is required'}
+                isInvalid={!!errors.make}
+                isRequired={!isVinValid.current}
                 label='Make'
                 placeholder='Make'
                 readOnly={isVinValid.current}
@@ -175,10 +250,10 @@ const VehicleInformationForm = React.forwardRef<
             render={({ field }) => (
               <Input
                 {...field}
-                {...register('model')} // Register the field
                 className='col-span-4'
-                errorMessage='Model is required'
-                isRequired={!isVinValid.current} // Added isRequired conditionally
+                errorMessage={errors.model?.message || 'Model is required'}
+                isInvalid={!!errors.model}
+                isRequired={!isVinValid.current}
                 label='Model'
                 placeholder='Model'
                 readOnly={isVinValid.current}

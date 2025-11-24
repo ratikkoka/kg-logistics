@@ -1,5 +1,7 @@
 'use client';
 
+import type { ContactFormData } from '@/types/forms';
+
 import React from 'react';
 import {
   Accordion,
@@ -19,10 +21,11 @@ import {
   useDisclosure,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
-import emailjs from '@emailjs/browser';
 import { Controller, useForm } from 'react-hook-form';
 
 import faqs from './faqs';
+
+import { sendEmail } from '@/utils/emailjs';
 
 export default function ContactPage() {
   const inputProps: Pick<InputProps, 'labelPlacement' | 'classNames'> = {
@@ -34,35 +37,42 @@ export default function ContactPage() {
   };
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-  const { control, register, handleSubmit } = useForm();
+  const { control, register, handleSubmit } = useForm<ContactFormData>();
 
-  const [contactType, setContactType] = React.useState('text');
+  const [contactType, setContactType] = React.useState<'text' | 'email'>(
+    'text'
+  );
 
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
-  const onSubmit = (data: any) => {
-    sendEmail(data);
-  };
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-  const sendEmail = (formValues: Record<string, unknown>) => {
-    emailjs
-      .send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
-        process.env.NEXT_PUBLIC_EMAILJS_CONTACT_ID || '',
-        formValues,
-        {
-          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '',
-        }
-      )
-      .then(
-        () => {
-          setIsSubmitted(true);
-          onClose();
-        },
-        (error) => {
-          console.log('FAILED...', error.text);
-        }
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '';
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_CONTACT_ID || '';
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '';
+
+    const result = await sendEmail(
+      serviceId,
+      templateId,
+      data as unknown as Record<string, unknown>,
+      publicKey
+    );
+
+    if (result.success) {
+      setIsSubmitted(true);
+      onClose();
+    } else {
+      setSubmitError(
+        result.error?.text ||
+          'Failed to send your message. Please try again or contact us directly.'
       );
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -208,12 +218,16 @@ export default function ContactPage() {
                         color='secondary'
                         defaultValue='text'
                         errorMessage='Contact method is required'
-                        label='Preffered Contact Method'
+                        label='Preferred Contact Method'
                         orientation='horizontal'
                         value={field.value}
                         onChange={(value) => {
-                          field.onChange(value);
-                          setContactType(value.target.value);
+                          const contactTypeValue = value.target.value as
+                            | 'text'
+                            | 'email';
+
+                          field.onChange(contactTypeValue);
+                          setContactType(contactTypeValue);
                         }}
                       >
                         <Radio value='text'>Text</Radio>
@@ -244,14 +258,20 @@ export default function ContactPage() {
                   <div className='flex gap-2'>
                     <Button
                       color='danger'
+                      isDisabled={isSubmitting}
                       type='button'
                       variant='flat'
                       onPress={onClose}
                     >
                       Cancel
                     </Button>
-                    <Button color='secondary' type='submit'>
-                      Submit
+                    <Button
+                      color='secondary'
+                      isDisabled={isSubmitting}
+                      isLoading={isSubmitting}
+                      type='submit'
+                    >
+                      {isSubmitting ? 'Sending...' : 'Submit'}
                     </Button>
                   </div>
                 </div>
@@ -260,6 +280,16 @@ export default function ContactPage() {
           )}
         </ModalContent>
       </Modal>
+      {submitError && (
+        <Alert
+          color='danger'
+          description={submitError}
+          isVisible={!!submitError}
+          title='Error'
+          variant='faded'
+          onClose={() => setSubmitError(null)}
+        />
+      )}
       <Alert
         color='success'
         description='Your message was sent successfully!'

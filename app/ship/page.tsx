@@ -33,6 +33,7 @@ const variants = {
 export default function Component() {
   const [[page, direction], setPage] = React.useState([0, 0]);
   const [isSubmitted, setIsSubmitted] = React.useState(false); // Track submission status
+  const [isSubmitting, setIsSubmitting] = React.useState(false); // Track submission in progress
 
   const paginate = React.useCallback((newDirection: number) => {
     setPage((prev) => {
@@ -76,7 +77,12 @@ export default function Component() {
         component = <ChooseAddressForm onNext={onNext} />;
         break;
       case 3:
-        component = <ReviewForm onSubmitSuccess={handleSubmission} />;
+        component = (
+          <ReviewForm
+            onSubmitSuccess={handleSubmission}
+            onSubmittingChange={setIsSubmitting}
+          />
+        );
         break;
     }
 
@@ -113,10 +119,20 @@ export default function Component() {
         : page === 3
           ? 'submit-step'
           : 'address-info';
-  const backButtonProps = { isDisabled: page === 0 || isSubmitted }; // Disable back button if submitted
+  const backButtonProps = {
+    isDisabled: page === 0 || isSubmitted || isSubmitting,
+  }; // Disable back button if submitted or submitting
   const nextButtonProps = {
-    children: page === 0 ? 'Continue' : page === 3 ? 'Submit' : 'Continue',
-    isDisabled: isSubmitted, // Only disable if the form is submitted
+    children:
+      page === 0
+        ? 'Continue'
+        : page === 3
+          ? isSubmitting
+            ? 'Submitting...'
+            : 'Submit'
+          : 'Continue',
+    isDisabled: isSubmitted || isSubmitting, // Disable if submitted or submitting
+    isLoading: page === 3 && isSubmitting, // Show loading spinner on submit
   };
 
   return (
