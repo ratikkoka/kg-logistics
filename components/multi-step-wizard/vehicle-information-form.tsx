@@ -172,10 +172,10 @@ const VehicleInformationForm = React.forwardRef<
 
   return (
     <>
-      <div className='text-3xl font-bold leading-9 text-default-foreground'>
+      <div className='text-default-foreground text-3xl leading-9 font-bold'>
         Vehicle Information
       </div>
-      <div className='py-4 text-default-500'>
+      <div className='text-default-500 py-4'>
         Please provide your vehicle&apos;s information
       </div>
       <form
@@ -274,12 +274,12 @@ const VehicleInformationForm = React.forwardRef<
               classNames={{
                 wrapper: 'gap-4',
                 label: cn(
-                  'absolute pointer-events-none origin-top-left flex-shrink-0',
+                  'absolute pointer-events-none origin-top-left shrink-0',
                   'rtl:origin-top-right subpixel-antialiased block will-change-auto',
-                  '!duration-200 !ease-out motion-reduce:transition-none',
+                  'duration-200! ease-out! motion-reduce:transition-none',
                   'transition-[transform,color,left,opacity]',
                   'group-data-[filled-within=true]:pointer-events-auto pb-0 z-20',
-                  '-top-7 -left-0 group-data-[filled-within=true]:start-0',
+                  '-top-7 left-0 group-data-[filled-within=true]:start-0',
                   'start-3 end-auto group-data-[filled-within=true]:-translate-y-[calc(100%_+_theme(fontSize.small)/2_+_20px)]',
                   'pe-2 max-w-full text-ellipsis overflow-hidden text-small font-medium',
                   'text-default-700 group-data-[filled-within=true]:text-default-700'

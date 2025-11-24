@@ -10,18 +10,18 @@ export default function AboutPage() {
     <div>
       <div className='mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8'>
         <div className='mb-16 text-center'>
-          <h2 className='mb-4 bg-gradient-to-br from-foreground to-foreground-600 bg-clip-text px-2 text-center text-3xl font-bold tracking-tight text-transparent'>
+          <h2 className='from-foreground to-foreground-600 mb-4 bg-linear-to-br bg-clip-text px-2 text-center text-3xl font-bold tracking-tight text-transparent'>
             About Us
           </h2>
-          <Card className='mx-auto max-w-3xl bg-content1 shadow-md'>
+          <Card className='bg-content1 mx-auto max-w-3xl shadow-md'>
             <CardBody className='px-6 py-8 text-left'>
-              <p className='leading-relaxed text-foreground'>
+              <p className='text-foreground leading-relaxed'>
                 We are a team of long time car enthusiasts who pride ourselves
                 on quality above all else. From years of having our own cars
                 shipped, we know exactly what inspires confidence and what
                 premium service is.
               </p>
-              <p className='mt-4 leading-relaxed text-foreground'>
+              <p className='text-foreground mt-4 leading-relaxed'>
                 That is why our motto is:{' '}
                 <span className='font-semibold italic'>
                   Treat customer cars the way we&apos;d want our own to be
@@ -30,7 +30,7 @@ export default function AboutPage() {
                 From daily commuters to rare exotics, we will deliver top
                 quality customer service and a worry free delivery experience.
               </p>
-              <p className='mt-4 font-medium leading-relaxed text-foreground'>
+              <p className='text-foreground mt-4 leading-relaxed font-medium'>
                 When you choose KG Logistics, you choose peace of mind.
               </p>
             </CardBody>
@@ -38,7 +38,7 @@ export default function AboutPage() {
         </div>
 
         <div className='mb-16'>
-          <h2 className='mb-8 bg-gradient-to-br from-foreground to-foreground-600 bg-clip-text px-2 text-center text-3xl font-bold tracking-tight text-transparent'>
+          <h2 className='from-foreground to-foreground-600 mb-8 bg-linear-to-br bg-clip-text px-2 text-center text-3xl font-bold tracking-tight text-transparent'>
             Why Choose Us
           </h2>
           <div className='grid grid-cols-1 gap-8 md:grid-cols-2'>

@@ -60,13 +60,13 @@ const MultiStepSidebar = React.forwardRef<
         className={cn('flex h-[calc(100vh-64px)] w-full gap-x-2', className)}
         {...props}
       >
-        <div className='flex hidden h-[calc(100vh-120px)] w-[344px] flex-shrink-0 flex-col items-start gap-y-8 rounded-large bg-gradient-to-b from-sky-100 via-indigo-100 to-purple-100 px-8 py-6 shadow-small lg:flex'>
+        <div className='rounded-large shadow-small flex hidden h-[calc(100vh-120px)] w-[344px] shrink-0 flex-col items-start gap-y-8 bg-linear-to-b from-sky-100 via-indigo-100 to-purple-100 px-8 py-6 lg:flex'>
           <DynamicLottieWithNoSSR animationData={truckAnimation} loop={true} />
           <div className='-mt-8'>
-            <div className='text-xl font-medium leading-7 text-default-foreground'>
+            <div className='text-default-foreground text-xl leading-7 font-medium'>
               Shipping Quote
             </div>
-            <div className='mt-1 text-base font-medium leading-6 text-default-500'>
+            <div className='text-default-500 mt-1 text-base leading-6 font-medium'>
               Get a personalized quote for your vehicle.
             </div>
           </div>
@@ -98,7 +98,7 @@ const MultiStepSidebar = React.forwardRef<
           />
         </div>
         <div className='flex h-full w-full flex-col items-center gap-4 md:p-4'>
-          <div className='sticky top-0 z-10 w-full rounded-large bg-gradient-to-r from-default-100 via-danger-100 to-secondary-100 py-4 shadow-small md:max-w-xl lg:hidden'>
+          <div className='rounded-large from-default-100 via-danger-100 to-secondary-100 shadow-small sticky top-0 z-10 w-full bg-linear-to-r py-4 md:max-w-xl lg:hidden'>
             <div className='flex justify-center'>
               {/* Mobile Steps */}
               <RowSteps

@@ -27,7 +27,7 @@ export const Navbar = () => {
       classNames={{
         base: ['bg-[#FFFAF0]'],
         item: [
-          '[&>a]:data-[active=true]:!text-transparent bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text',
+          '[&>a]:data-[active=true]:text-transparent! bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text',
           '[&>a]:data-[active=true]:hover:opacity-100',
           '[&>a]:hover:opacity-50',
         ],
@@ -63,7 +63,7 @@ export const Navbar = () => {
         <NavbarItem className='hidden lg:flex'>
           <Button
             as={Link}
-            className='bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white shadow-lg hover:!opacity-80'
+            className='bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 text-white shadow-lg hover:opacity-80!'
             href='/ship'
             radius='full'
           >
@@ -94,7 +94,7 @@ export const Navbar = () => {
         <NavbarMenuItem>
           <Button
             as={Link}
-            className='bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white shadow-lg hover:!opacity-80'
+            className='bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 text-white shadow-lg hover:opacity-80!'
             href='/ship'
             radius='full'
             onPress={() => setIsMenuOpen(false)}

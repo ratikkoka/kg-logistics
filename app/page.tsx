@@ -25,12 +25,12 @@ export default function Home() {
         <span className={title({ size: 'lg' })}>
           <TextTransition
             inline
-            className='bg-gradient-to-br from-foreground to-foreground-600 bg-clip-text'
+            className='from-foreground to-foreground-600 bg-linear-to-br bg-clip-text'
             springConfig={presets.slow}
           >
             {TEXTS[index % TEXTS.length]}
           </TextTransition>
-          <span className='bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent'>
+          <span className='bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent'>
             &nbsp;Enthusiasts
           </span>
         </span>
@@ -39,7 +39,7 @@ export default function Home() {
       <div className='flex gap-3'>
         <Button
           as={Link}
-          className='m-2 h-14 bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 px-7 text-2xl text-white shadow-lg'
+          className='m-2 h-14 bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 px-7 text-2xl text-white shadow-lg'
           href='/ship'
           radius='full'
         >

@@ -78,7 +78,7 @@ export default function ContactPage() {
   return (
     <section className='mx-auto w-full max-w-6xl px-4 sm:py-32 md:px-6 lg:px-8'>
       <div className='mx-auto flex w-full max-w-4xl flex-col items-center gap-8'>
-        <h2 className='leading-[1.25 w-full max-w-3xl bg-gradient-to-br from-foreground to-foreground-600 bg-clip-text px-2 text-center text-3xl font-bold tracking-tight text-transparent md:text-5xl md:leading-[1.25]'>
+        <h2 className='leading-[1.25 from-foreground to-foreground-600 w-full max-w-3xl bg-linear-to-br bg-clip-text px-2 text-center text-3xl font-bold tracking-tight text-transparent md:text-5xl md:leading-tight'>
           <span className='inline-block md:hidden'>FAQs</span>
           <span className='hidden md:inline-block'>
             Frequently asked questions
@@ -87,7 +87,7 @@ export default function ContactPage() {
         <div>
           <Button
             disableAnimation
-            className='bg-gradient-to-br from-foreground to-foreground-600 font-medium text-background'
+            className='from-foreground to-foreground-600 text-background bg-linear-to-br font-medium'
             endContent={<Icon icon='lucide:chevron-right' width={24} />}
             size='lg'
             variant='shadow'
@@ -121,7 +121,7 @@ export default function ContactPage() {
               }
               title={item.title}
             >
-              <pre className='whitespace-pre-wrap font-mono'>
+              <pre className='font-mono whitespace-pre-wrap'>
                 {item.content.split('\n').map((line, index) => (
                   <React.Fragment key={index}>
                     {line}
@@ -145,7 +145,7 @@ export default function ContactPage() {
             <ModalBody>
               <ModalHeader className='flex-col items-center gap-1 px-0 text-center'>
                 <h1 className='text-xl'>Contact Us</h1>
-                <p className='text-small font-normal text-default-500'>
+                <p className='text-small text-default-500 font-normal'>
                   Have a question? Feel free to reach out to us!
                 </p>
               </ModalHeader>

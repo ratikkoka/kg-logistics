@@ -184,7 +184,7 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                     ref={ref}
                     aria-current={status === 'active' ? 'step' : undefined}
                     className={cn(
-                      'group flex w-full cursor-pointer items-center justify-center gap-4 rounded-large px-3 py-2.5',
+                      'group rounded-large flex w-full cursor-pointer items-center justify-center gap-4 px-3 py-2.5',
                       stepClassName,
                       disabled && 'cursor-not-allowed opacity-50' // Disable button if disabled
                     )}
@@ -197,7 +197,7 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                           <m.div
                             animate={status}
                             className={cn(
-                              'relative flex h-[34px] w-[34px] items-center justify-center rounded-full border-medium text-large font-semibold text-default-foreground',
+                              'border-medium text-large text-default-foreground relative flex h-[34px] w-[34px] items-center justify-center rounded-full font-semibold',
                               {
                                 'shadow-lg': status === 'complete',
                               }
@@ -225,7 +225,7 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                           >
                             <div className='flex items-center justify-center'>
                               {status === 'complete' ? (
-                                <CheckIcon className='h-6 w-6 text-[var(--active-fg-color)]' />
+                                <CheckIcon className='h-6 w-6 text-(--active-fg-color)' />
                               ) : (
                                 <span>{stepIdx + 1}</span>
                               )}
@@ -238,7 +238,7 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                       <div>
                         <div
                           className={cn(
-                            'text-medium font-medium text-default-foreground transition-[color,opacity] duration-300 group-active:opacity-70',
+                            'text-medium text-default-foreground font-medium transition-[color,opacity] duration-300 group-active:opacity-70',
                             {
                               'text-default-500': status === 'inactive',
                             }
@@ -248,7 +248,7 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                         </div>
                         <div
                           className={cn(
-                            'text-tiny text-default-600 transition-[color,opacity] duration-300 group-active:opacity-70 lg:text-small',
+                            'text-tiny text-default-600 lg:text-small transition-[color,opacity] duration-300 group-active:opacity-70',
                             {
                               'text-default-500': status === 'inactive',
                             }
@@ -264,7 +264,7 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                   <div
                     aria-hidden='true'
                     className={cn(
-                      'pointer-events-none absolute left-3 top-[calc(64px_*_var(--idx)_+_1)] flex h-1/2 -translate-y-1/3 items-center px-4'
+                      'pointer-events-none absolute top-[calc(64px*var(--idx)+1)] left-3 flex h-1/2 -translate-y-1/3 items-center px-4'
                     )}
                     style={{
                       // @ts-ignore
@@ -273,8 +273,8 @@ const VerticalSteps = React.forwardRef<HTMLButtonElement, VerticalStepsProps>(
                   >
                     <div
                       className={cn(
-                        'relative h-full w-0.5 bg-[var(--inactive-bar-color)] transition-colors duration-300',
-                        "after:absolute after:block after:h-0 after:w-full after:bg-[var(--active-border-color)] after:transition-[height] after:duration-300 after:content-['']",
+                        'relative h-full w-0.5 bg-(--inactive-bar-color) transition-colors duration-300',
+                        "after:absolute after:block after:h-0 after:w-full after:bg-(--active-border-color) after:transition-[height] after:duration-300 after:content-['']",
                         {
                           'after:h-full': stepIdx < currentStep,
                         }

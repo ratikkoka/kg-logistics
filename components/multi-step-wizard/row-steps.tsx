@@ -189,7 +189,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                   ref={ref}
                   aria-current={status === 'active' ? 'step' : undefined}
                   className={cn(
-                    'group flex w-full cursor-pointer flex-row items-center justify-center gap-x-3 rounded-large py-2.5',
+                    'group rounded-large flex w-full cursor-pointer flex-row items-center justify-center gap-x-3 py-2.5',
                     stepClassName,
                     disabled && 'cursor-not-allowed opacity-50' // Disable button if disabled
                   )}
@@ -201,7 +201,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                       <m.div animate={status} className='relative'>
                         <m.div
                           className={cn(
-                            'relative flex h-[34px] w-[34px] items-center justify-center rounded-full border-medium text-large font-semibold text-default-foreground',
+                            'border-medium text-large text-default-foreground relative flex h-[34px] w-[34px] items-center justify-center rounded-full font-semibold',
                             {
                               'shadow-lg': status === 'complete',
                             }
@@ -228,7 +228,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                         >
                           <div className='flex items-center justify-center'>
                             {status === 'complete' ? (
-                              <CheckIcon className='h-6 w-6 text-[var(--active-fg-color)]' />
+                              <CheckIcon className='h-6 w-6 text-(--active-fg-color)' />
                             ) : (
                               <span>{stepIdx + 1}</span>
                             )}
@@ -240,7 +240,7 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                   <div className='max-w-full flex-1 text-start'>
                     <div
                       className={cn(
-                        'text-small font-medium text-default-foreground transition-[color,opacity] duration-300 group-active:opacity-80 lg:text-medium',
+                        'text-small text-default-foreground lg:text-medium font-medium transition-[color,opacity] duration-300 group-active:opacity-80',
                         {
                           'text-default-500': status === 'inactive',
                         }
@@ -260,8 +260,8 @@ const RowSteps = React.forwardRef<HTMLButtonElement, RowStepsProps>(
                     >
                       <div
                         className={cn(
-                          'relative h-0.5 w-full bg-[var(--inactive-bar-color)] transition-colors duration-300',
-                          "after:absolute after:block after:h-full after:w-0 after:bg-[var(--active-border-color)] after:transition-[width] after:duration-300 after:content-['']",
+                          'relative h-0.5 w-full bg-(--inactive-bar-color) transition-colors duration-300',
+                          "after:absolute after:block after:h-full after:w-0 after:bg-(--active-border-color) after:transition-[width] after:duration-300 after:content-['']",
                           {
                             'after:w-full': stepIdx < currentStep,
                           }

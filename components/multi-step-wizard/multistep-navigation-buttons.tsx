@@ -40,7 +40,7 @@ const MultistepNavigationButtons = React.forwardRef<
     >
       <Button
         className={clsx(
-          'rounded-medium border-default-200 text-medium font-medium text-default-500',
+          'rounded-medium border-default-200 text-medium text-default-500 font-medium',
           backButtonProps?.isDisabled && 'hidden'
         )}
         variant='bordered'
@@ -53,7 +53,7 @@ const MultistepNavigationButtons = React.forwardRef<
 
       <Button
         className={clsx(
-          'bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-medium font-medium text-white',
+          'text-medium bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 font-medium text-white',
           nextButtonProps?.isDisabled && 'hidden'
         )}
         form={form}
@@ -66,7 +66,7 @@ const MultistepNavigationButtons = React.forwardRef<
 
       <Button
         className={clsx(
-          'bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-medium font-medium text-white',
+          'text-medium bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 font-medium text-white',
           !nextButtonProps?.isDisabled && 'hidden'
         )}
         form={form}

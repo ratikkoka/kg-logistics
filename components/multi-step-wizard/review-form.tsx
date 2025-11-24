@@ -173,7 +173,7 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
         {...props}
       >
         {isSubmitted ? (
-          <div className='text-center text-lg font-semibold text-default-700'>
+          <div className='text-default-700 text-center text-lg font-semibold'>
             <div className='mb-4 flex justify-center'>
               <Icon
                 className='text-success'
@@ -185,7 +185,7 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
             We will reach out with a quote within 24 hours.
             <div className='mx-auto my-6 mt-4 flex w-full items-center justify-center gap-x-4 lg:mx-0'>
               <Button
-                className='rounded-medium border-default-200 text-medium font-medium text-default-500'
+                className='rounded-medium border-default-200 text-medium text-default-500 font-medium'
                 variant='bordered'
                 onPress={() => (window.location.href = '/')}
               >
@@ -194,7 +194,7 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
                 <span className='inline sm:hidden'>Home</span>
               </Button>
               <Button
-                className='bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-medium font-medium text-white'
+                className='text-medium bg-linear-to-r from-sky-500 via-indigo-500 to-purple-600 font-medium text-white'
                 onPress={() => {
                   window.location.reload();
                 }}
@@ -207,17 +207,17 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
         ) : (
           <>
             {isSubmitting && (
-              <div className='mb-4 flex items-center justify-center gap-2 text-default-600'>
+              <div className='text-default-600 mb-4 flex items-center justify-center gap-2'>
                 <Spinner size='sm' />
                 <span>Submitting your request...</span>
               </div>
             )}
-            <div className='text-3xl font-bold leading-9 text-default-foreground'>
+            <div className='text-default-foreground text-3xl leading-9 font-bold'>
               Review Your Information
             </div>
             <div
               className={cn(
-                'mt-6 space-y-8 rounded-large bg-gradient-to-b from-sky-100 via-indigo-100 to-purple-100 p-6 shadow-small',
+                'rounded-large shadow-small mt-6 space-y-8 bg-linear-to-b from-sky-100 via-indigo-100 to-purple-100 p-6',
                 isSubmitting && 'pointer-events-none opacity-50'
               )}
             >
@@ -321,7 +321,7 @@ const ReviewForm = React.forwardRef<HTMLFormElement, ReviewFormProps>(
               </div>
             </div>
             {submitError && (
-              <div className='mt-4 rounded-lg bg-danger-50 p-4 text-danger'>
+              <div className='bg-danger-50 text-danger mt-4 rounded-lg p-4'>
                 <div className='flex items-center gap-2'>
                   <Icon icon='solar:danger-triangle-bold' width={20} />
                   <span className='font-medium'>{submitError}</span>
