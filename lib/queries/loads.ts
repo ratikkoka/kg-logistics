@@ -46,17 +46,28 @@ interface LoadsResponse {
 
 interface LoadStats {
   total: number;
-  unlistedCount: number;
-  listedCount: number;
-  carrierAssignedCount: number;
-  pickedUpCount: number;
-  completedCount: number;
+  statusCounts: {
+    UNLISTED: number;
+    LISTED: number;
+    CARRIER_ASSIGNED: number;
+    PICKED_UP: number;
+    COMPLETED: number;
+  };
+  loadTypeCounts: {
+    OPEN: number;
+    ENCLOSED: number;
+  };
   totalIncome: number;
   totalProfit: number;
-  profitMargin: number;
-  completionRate: number;
   avgProfit: number;
+  totalRevenue: number;
+  totalCarrierCosts: number;
+  profitMargin: string;
+  completionRate: string;
+  recentLoads: number;
+  weeklyLoads: number;
   avgDaysToComplete: string;
+  completedCount: number;
 }
 
 interface LoadsQueryParams {
