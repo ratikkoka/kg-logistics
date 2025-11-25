@@ -69,17 +69,15 @@ export default function ContactsDashboard() {
   );
   const [page, setPage] = useState(1);
 
-  // Debounce search
+  // Debounce search and reset to page 1 when search changes
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
-      if (page !== 1) {
-        setPage(1);
-      }
+      setPage(1); // Reset to page 1 when search changes
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [search, page]);
+  }, [search]); // Only depend on search, not page
 
   // Use React Query hook
   const { data: contactsData, isLoading: loading } = useContacts({
