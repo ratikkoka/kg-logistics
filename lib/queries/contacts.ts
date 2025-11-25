@@ -51,7 +51,13 @@ export function useContacts(params: ContactsQueryParams = {}) {
 
       const response = await fetch(`/api/leads?${queryParams.toString()}`);
 
-      if (!response.ok) throw new Error('Failed to fetch contacts');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.error || `Failed to fetch contacts (${response.status})`;
+
+        throw new Error(errorMessage);
+      }
 
       return response.json() as Promise<ContactsResponse>;
     },

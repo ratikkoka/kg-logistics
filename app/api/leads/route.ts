@@ -23,7 +23,10 @@ export async function GET(request: Request) {
     const authorized = await isUserAuthorized(user.id);
 
     if (!authorized) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Forbidden - User does not have access' },
+        { status: 403 }
+      );
     }
 
     const { searchParams } = new URL(request.url);
@@ -91,9 +94,34 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching leads:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    // Log full error details for debugging
+    console.error('Error details:', {
+      message: errorMessage,
+      stack: errorStack,
+      name: error instanceof Error ? error.name : 'Unknown',
+    });
+
+    // In production, return a more helpful error message
+    const isProduction = process.env.NODE_ENV === 'production';
 
     return NextResponse.json(
-      { error: 'Failed to fetch leads' },
+      {
+        error: 'Failed to fetch leads',
+        ...(isProduction
+          ? {
+              message: errorMessage,
+              // Include error type to help debug
+              type: error instanceof Error ? error.name : 'UnknownError',
+            }
+          : {
+              details: errorMessage,
+              stack: errorStack,
+            }),
+      },
       { status: 500 }
     );
   }

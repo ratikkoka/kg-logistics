@@ -93,7 +93,13 @@ export function useLeads(params: LeadsQueryParams = {}) {
 
       const response = await fetch(`/api/leads?${queryParams.toString()}`);
 
-      if (!response.ok) throw new Error('Failed to fetch leads');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.error || `Failed to fetch leads (${response.status})`;
+
+        throw new Error(errorMessage);
+      }
 
       return response.json() as Promise<LeadsResponse>;
     },
@@ -108,7 +114,13 @@ export function useLeadsStats() {
     queryFn: async () => {
       const response = await fetch('/api/dashboard/stats');
 
-      if (!response.ok) throw new Error('Failed to fetch stats');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.error || `Failed to fetch stats (${response.status})`;
+
+        throw new Error(errorMessage);
+      }
 
       return response.json() as Promise<DashboardStats>;
     },

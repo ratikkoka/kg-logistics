@@ -94,7 +94,13 @@ export function useLoads(params: LoadsQueryParams = {}) {
 
       const response = await fetch(`/api/loads?${queryParams.toString()}`);
 
-      if (!response.ok) throw new Error('Failed to fetch loads');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.error || `Failed to fetch loads (${response.status})`;
+
+        throw new Error(errorMessage);
+      }
 
       return response.json() as Promise<LoadsResponse>;
     },
@@ -121,7 +127,13 @@ export function useLoadsStats(
         `/api/loads/stats?${queryParams.toString()}`
       );
 
-      if (!response.ok) throw new Error('Failed to fetch load stats');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.error || `Failed to fetch load stats (${response.status})`;
+
+        throw new Error(errorMessage);
+      }
 
       return response.json() as Promise<LoadStats>;
     },
