@@ -1,10 +1,16 @@
-import type { LoadStatus, LoadType } from '@prisma/client';
-
 import { NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 import { isUserAuthorized } from '@/lib/auth';
+
+type LoadStatus =
+  | 'UNLISTED'
+  | 'LISTED'
+  | 'CARRIER_ASSIGNED'
+  | 'PICKED_UP'
+  | 'COMPLETED';
+type LoadType = 'OPEN' | 'ENCLOSED';
 
 // GET /api/loads - List all loads with filters
 export async function GET(request: Request) {

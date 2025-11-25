@@ -313,7 +313,7 @@ export default function LeadsDashboard() {
                 <Spinner size='lg' />
               </div>
             ) : (
-              <div className='grid grid-cols-5 gap-4'>
+              <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5'>
                 {(
                   [
                     'NEW',
@@ -338,15 +338,19 @@ export default function LeadsDashboard() {
                       key={status}
                       className='flex flex-col items-center gap-2'
                     >
-                      <CircularProgress
-                        color={colors[status]}
-                        percentage={percentage}
-                        size={100}
-                        strokeWidth={6}
-                      />
+                      <div className='scale-75 sm:scale-90 md:scale-100'>
+                        <CircularProgress
+                          color={colors[status]}
+                          percentage={percentage}
+                          size={100}
+                          strokeWidth={6}
+                        />
+                      </div>
                       <div className='text-center'>
-                        <div className='text-sm font-semibold'>{count}</div>
-                        <div className='text-default-500 text-xs'>
+                        <div className='text-xs font-semibold sm:text-sm'>
+                          {count}
+                        </div>
+                        <div className='text-default-500 text-[10px] sm:text-xs'>
                           {statusLabels[status]}
                         </div>
                       </div>
