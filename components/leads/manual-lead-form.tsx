@@ -81,8 +81,8 @@ export default function ManualLeadForm() {
     setError(null);
 
     // Validate required fields
-    if (!formData.email || !formData.formType) {
-      setError('Email and Form Type are required');
+    if (!formData.formType) {
+      setError('Form Type is required');
       setIsSubmitting(false);
 
       return;
@@ -107,7 +107,7 @@ export default function ManualLeadForm() {
           status: formData.status || 'NEW',
           firstName: formData.firstName || null,
           lastName: formData.lastName || null,
-          email: formData.email,
+          email: formData.email || null,
           phone: formData.phone || null,
           // Vehicle info
           vin: formData.vin || null,
@@ -220,7 +220,6 @@ export default function ManualLeadForm() {
 
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <Input
-              isRequired
               label='Email'
               placeholder='john.doe@example.com'
               type='email'

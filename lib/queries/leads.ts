@@ -6,7 +6,7 @@ type Lead = {
   status: 'NEW' | 'CONTACTED' | 'QUOTED' | 'CONVERTED' | 'LOST';
   firstName: string | null;
   lastName: string | null;
-  email: string;
+  email: string | null;
   phone: string | null;
   openQuote: string | null;
   enclosedQuote: string | null;

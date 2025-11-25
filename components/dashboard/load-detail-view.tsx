@@ -54,7 +54,7 @@ type Load = {
   lead: {
     firstName: string | null;
     lastName: string | null;
-    email: string;
+    email: string | null;
     phone: string | null;
   };
 };
@@ -235,7 +235,7 @@ export default function LoadDetailView({
   const customerName =
     load.lead.firstName || load.lead.lastName
       ? `${load.lead.firstName || ''} ${load.lead.lastName || ''}`.trim()
-      : load.lead.email;
+      : load.lead.email || 'N/A';
 
   return (
     <div className='space-y-6 overflow-x-hidden'>
@@ -288,7 +288,7 @@ export default function LoadDetailView({
                 </div>
                 <div>
                   <p className='text-default-500 text-sm'>Email</p>
-                  <p className='font-medium'>{load.lead.email}</p>
+                  <p className='font-medium'>{load.lead.email || 'N/A'}</p>
                 </div>
                 {load.lead.phone && (
                   <div>

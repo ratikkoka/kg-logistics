@@ -31,7 +31,7 @@ type Lead = {
   status: 'NEW' | 'CONTACTED' | 'QUOTED' | 'CONVERTED' | 'LOST';
   firstName: string | null;
   lastName: string | null;
-  email: string;
+  email: string | null;
   phone: string | null;
   openQuote: string | null;
   enclosedQuote: string | null;
@@ -365,16 +365,18 @@ export default function LeadDetailView({ lead }: LeadDetailViewProps) {
                 <div className='flex items-start justify-between gap-2'>
                   <div className='flex-1'>
                     <p className='text-default-500 text-sm'>Email</p>
-                    <p className='font-medium'>{lead.email}</p>
+                    <p className='font-medium'>{lead.email || 'N/A'}</p>
                   </div>
-                  <Button
-                    isIconOnly
-                    size='sm'
-                    variant='light'
-                    onPress={() => copyToClipboard(lead.email, 'Email')}
-                  >
-                    <Icon icon='solar:copy-outline' width={18} />
-                  </Button>
+                  {lead.email && (
+                    <Button
+                      isIconOnly
+                      size='sm'
+                      variant='light'
+                      onPress={() => copyToClipboard(lead.email!, 'Email')}
+                    >
+                      <Icon icon='solar:copy-outline' width={18} />
+                    </Button>
+                  )}
                 </div>
                 <div className='flex items-start justify-between gap-2'>
                   <div className='flex-1'>
@@ -762,6 +764,7 @@ export default function LeadDetailView({ lead }: LeadDetailViewProps) {
             <CardBody className='space-y-2'>
               <Button
                 className='w-full justify-start'
+                isDisabled={!lead.email}
                 startContent={<Icon icon='solar:letter-outline' width={20} />}
                 variant='bordered'
                 onPress={onEmailOpen}
@@ -832,7 +835,7 @@ export default function LeadDetailView({ lead }: LeadDetailViewProps) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Send Email to {lead.email}</ModalHeader>
+              <ModalHeader>Send Email to {lead.email || 'Lead'}</ModalHeader>
               <ModalBody>
                 <div className='space-y-4'>
                   <Select

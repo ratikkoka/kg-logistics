@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
+import { isUserAuthorized } from '@/lib/auth';
 
 // GET /api/leads - List all leads with filters
 export async function GET(request: Request) {
@@ -16,6 +17,13 @@ export async function GET(request: Request) {
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if requesting user is authorized
+    const authorized = await isUserAuthorized(user.id);
+
+    if (!authorized) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -97,9 +105,9 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.email || !body.formType) {
+    if (!body.formType) {
       return NextResponse.json(
-        { error: 'Email and formType are required' },
+        { error: 'formType is required' },
         { status: 400 }
       );
     }
@@ -111,7 +119,7 @@ export async function POST(request: Request) {
         status: body.status || 'NEW',
         firstName: body.firstName || null,
         lastName: body.lastName || null,
-        email: body.email,
+        email: body.email || null,
         phone: body.phone || null,
         // Vehicle info
         vin: body.vin || null,

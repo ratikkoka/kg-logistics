@@ -29,7 +29,7 @@ type Contact = {
   status: 'NEW' | 'CONTACTED' | 'QUOTED' | 'CONVERTED' | 'LOST';
   firstName: string | null;
   lastName: string | null;
-  email: string;
+  email: string | null;
   phone: string | null;
   message: string | null;
   notes: string | null;

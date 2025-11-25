@@ -30,7 +30,7 @@ type Lead = {
   status: 'NEW' | 'CONTACTED' | 'QUOTED' | 'CONVERTED' | 'LOST';
   firstName: string | null;
   lastName: string | null;
-  email: string;
+  email: string | null;
   phone: string | null;
   openQuote: string | null;
   enclosedQuote: string | null;
@@ -102,7 +102,12 @@ export default function LeadsDashboard() {
   }, [search, page]);
 
   // Use React Query hooks
-  const { data: leadsData, isLoading: loading } = useLeads({
+  const {
+    data: leadsData,
+    isLoading: loading,
+    isError: leadsError,
+    error: leadsErrorDetails,
+  } = useLeads({
     page,
     limit: 10,
     status: statusFilter,
@@ -110,7 +115,11 @@ export default function LeadsDashboard() {
     search: debouncedSearch,
   });
 
-  const { data: stats, isLoading: statsLoading } = useLeadsStats();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    isError: statsError,
+  } = useLeadsStats();
 
   // Extract data from query results
   const leads = leadsData?.leads || [];
@@ -491,6 +500,13 @@ export default function LeadsDashboard() {
             <div className='flex justify-center py-8'>
               <Spinner size='lg' />
             </div>
+          ) : leadsError ? (
+            <div className='py-8 text-center text-red-500'>
+              Error loading leads:{' '}
+              {leadsErrorDetails instanceof Error
+                ? leadsErrorDetails.message
+                : 'Unknown error'}
+            </div>
           ) : leads.length === 0 ? (
             <div className='py-8 text-center text-gray-500'>
               No leads found. Try adjusting your filters.
@@ -523,7 +539,7 @@ export default function LeadsDashboard() {
                         className='cursor-pointer'
                         onClick={() => router.push(`/leads/${lead.id}`)}
                       >
-                        {lead.email}
+                        {lead.email || 'N/A'}
                       </TableCell>
                       <TableCell
                         className='cursor-pointer'

@@ -9,7 +9,7 @@ function replaceTemplateVariables(
   lead: {
     firstName: string | null;
     lastName: string | null;
-    email: string;
+    email: string | null;
     phone: string | null;
     openQuote: string | null;
     enclosedQuote: string | null;
@@ -48,7 +48,7 @@ function replaceTemplateVariables(
     .replace(/\{\{lead\.name\}\}/g, name)
     .replace(/\{\{lead\.firstName\}\}/g, lead.firstName || '')
     .replace(/\{\{lead\.lastName\}\}/g, lead.lastName || '')
-    .replace(/\{\{lead\.email\}\}/g, lead.email)
+    .replace(/\{\{lead\.email\}\}/g, lead.email || '')
     .replace(/\{\{lead\.phone\}\}/g, lead.phone || '')
     .replace(/\{\{lead\.vehicle\}\}/g, vehicle)
     .replace(/\{\{lead\.year\}\}/g, lead.year || '')
@@ -98,6 +98,13 @@ export async function POST(request: Request) {
 
     if (!lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+    }
+
+    if (!lead.email) {
+      return NextResponse.json(
+        { error: 'Lead does not have an email address' },
+        { status: 400 }
+      );
     }
 
     let finalSubject = subject || customSubject;

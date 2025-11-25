@@ -44,7 +44,7 @@ type Load = {
   lead: {
     firstName: string | null;
     lastName: string | null;
-    email: string;
+    email: string | null;
   };
 };
 
@@ -96,7 +96,12 @@ export default function LoadsDashboard() {
   }, [search, page]);
 
   // Use React Query hooks
-  const { data: loadsData, isLoading: loading } = useLoads({
+  const {
+    data: loadsData,
+    isLoading: loading,
+    isError: loadsError,
+    error: loadsErrorDetails,
+  } = useLoads({
     page,
     limit: 10,
     status: statusFilter,
@@ -130,7 +135,7 @@ export default function LoadsDashboard() {
       return `${load.lead.firstName || ''} ${load.lead.lastName || ''}`.trim();
     }
 
-    return load.lead.email;
+    return load.lead.email || 'N/A';
   };
 
   const calculateProfit = (quoted: string | null, carrier: string | null) => {
@@ -439,6 +444,13 @@ export default function LoadsDashboard() {
           {loading ? (
             <div className='flex justify-center py-8'>
               <Spinner size='lg' />
+            </div>
+          ) : loadsError ? (
+            <div className='py-8 text-center text-red-500'>
+              Error loading loads:{' '}
+              {loadsErrorDetails instanceof Error
+                ? loadsErrorDetails.message
+                : 'Unknown error'}
             </div>
           ) : loads.length === 0 ? (
             <div className='py-8 text-center text-gray-500'>
