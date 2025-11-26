@@ -34,6 +34,7 @@ export default function Component() {
   const [[page, direction], setPage] = React.useState([0, 0]);
   const [isSubmitted, setIsSubmitted] = React.useState(false); // Track submission status
   const [isSubmitting, setIsSubmitting] = React.useState(false); // Track submission in progress
+  const [maxVisitedPage, setMaxVisitedPage] = React.useState(0);
 
   const paginate = React.useCallback((newDirection: number) => {
     setPage((prev) => {
@@ -45,14 +46,18 @@ export default function Component() {
     });
   }, []);
 
-  const onChangePage = React.useCallback((newPage: number) => {
-    setPage((prev) => {
-      if (newPage < 0 || newPage > 3) return prev;
-      const currentPage = prev[0];
+  const onChangePage = React.useCallback(
+    (newPage: number) => {
+      setPage((prev) => {
+        if (newPage < 0 || newPage > 3) return prev;
+        if (newPage > maxVisitedPage) return prev;
+        const currentPage = prev[0];
 
-      return [newPage, newPage > currentPage ? 1 : -1];
-    });
-  }, []);
+        return [newPage, newPage > currentPage ? 1 : -1];
+      });
+    },
+    [maxVisitedPage]
+  );
 
   const onBack = React.useCallback(() => {
     paginate(-1);
@@ -65,6 +70,10 @@ export default function Component() {
   const handleSubmission = React.useCallback(() => {
     setIsSubmitted(true); // Update submission status from ReviewForm
   }, []);
+
+  React.useEffect(() => {
+    setMaxVisitedPage((prev) => Math.max(prev, page));
+  }, [page]);
 
   const content = React.useMemo(() => {
     let component = <ContactInformationForm onNext={onNext} />;
