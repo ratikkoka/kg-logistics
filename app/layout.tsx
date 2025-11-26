@@ -82,6 +82,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           defer
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=kg_auto_callback`}
         />
+        <meta content='B14FFB365C286B88653F1AB6DD7ED148' name='msvalidate.01' />
+        <meta
+          content='iPnC5gnNoTkQulVXhCwZBAyVwm1PJnPxII1HlNFgegg'
+          name='google-site-verification'
+        />
       </head>
       <body
         className={clsx(
