@@ -97,7 +97,7 @@ const MultiStepSidebar = React.forwardRef<
             onStepChange={onChangePage}
           />
         </div>
-        <div className='flex h-full w-full flex-col items-center gap-4 md:p-4'>
+        <div className='flex h-full min-h-0 w-full flex-col items-center gap-4 md:p-4'>
           <div className='rounded-large from-default-100 via-danger-100 to-secondary-100 shadow-small sticky top-0 z-10 w-full bg-linear-to-r py-4 md:max-w-xl lg:hidden'>
             <div className='flex justify-center'>
               {/* Mobile Steps */}
@@ -123,7 +123,7 @@ const MultiStepSidebar = React.forwardRef<
               />
             </div>
           </div>
-          <div className='h-full w-full p-4 sm:max-w-md md:max-w-lg'>
+          <div className='min-h-0 w-full flex-1 overflow-y-auto p-4 sm:max-w-md md:max-w-lg'>
             {children}
           </div>
         </div>

@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
   return (
-    <section className='h-[calc(100vh-64px)]'>
-      <div className='flex h-[calc(100vh-64px)] w-screen items-start justify-center p-8'>
+    <section className='flex h-[calc(100vh-64px)] min-h-0 flex-col'>
+      <div className='flex h-full min-h-0 w-screen items-start justify-center p-8'>
         {children}
       </div>
     </section>

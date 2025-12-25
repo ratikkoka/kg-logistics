@@ -36,7 +36,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         <main
           className={clsx(
             'h-[calc(100vh-64px)]',
-            isShipRoute && 'overflow-hidden',
+            isShipRoute && 'flex flex-col',
             !isShipRoute &&
               !isAdminRoute &&
               'container mx-auto flex flex-1 flex-col items-center justify-center px-8',
