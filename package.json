@@ -40,7 +40,7 @@
     "framer-motion": "^12.23.24",
     "intl-messageformat": "^10.5.0",
     "lottie-react": "^2.4.0",
-    "next": "16.0.3",
+    "next": "16.0.10",
     "next-themes": "^0.2.1",
     "node-fetch": "^3.1.1",
     "prisma": "^6.19.0",
