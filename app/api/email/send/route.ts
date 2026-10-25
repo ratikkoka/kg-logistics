@@ -146,6 +146,7 @@ export async function POST(request: Request) {
           from:
             process.env.RESEND_FROM_EMAIL ||
             'KG Logistics <onboarding@resend.dev>',
+          replyTo: 'support@kgautologistics.com',
           to: lead.email,
           subject: finalSubject,
           html: htmlBody,
